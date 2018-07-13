@@ -1,0 +1,33 @@
+{
+  "name": "on3d",
+  "version": "1.0.0",
+  "description": "Sistema web para la administracion, cotizacion y realizacion de impresiones 3D",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miguel5612/on3D.git"
+  },
+  "keywords": [
+    "node",
+    "js",
+    "stl",
+    "arduino",
+    "supervision",
+    "monitoreo",
+    "remoto",
+    "web"
+  ],
+  "author": "Miguel Angel Califa Urquiza - Carlos Mauricio Pallares",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/miguel5612/on3D/issues"
+  },
+  "homepage": "https://github.com/miguel5612/on3D#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.3"
+  }
+}
