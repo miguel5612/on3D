@@ -17,7 +17,19 @@ app.set('view engine', 'ejs');
 app.get('/', function(req, res) {
     res.render('pages/index');
 });
+app.get('/index.html', function(req, res) {
+    res.render('pages/index');
+});
 
+// Login 
+app.get('/login', function(req, res) {
+    res.render('pages/login');
+});
+
+// Cotizar tu impresion 
+app.get('/cotizacionEnLinea', function(req, res) {
+    res.render('pages/cotizacionEnLinea');
+});
 // about page 
 app.get('/about', function(req, res) {
     res.render('pages/about');
