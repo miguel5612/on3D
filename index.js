@@ -1,7 +1,11 @@
 // load the things we need
 var express = require('express');
 var app = express();
+//to upload files 
+var formidable = require('formidable');
 
+
+// Server configs
 var port = 8000;
 
 // set static folder
@@ -29,6 +33,15 @@ app.get('/login', function(req, res) {
 // Cotizar tu impresion 
 app.get('/cotizacionEnLinea', function(req, res) {
     res.render('pages/cotizacionEnLinea');
+});
+// Subir tu archivo al SV
+app.get('/subirSTL', function(req, res) {
+	var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      res.write('File uploaded');
+      console.log("Archivo subido con exito :)");
+      res.end();
+    });
 });
 // about page 
 app.get('/about', function(req, res) {

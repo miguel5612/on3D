@@ -10,29 +10,30 @@
 <header>
     <% include ../partials/header %>
     <link rel="stylesheet" type="text/css" href="../css/cotizador.css">
+    <script type="text/javascript" src="../js/cotizador.js"></script>
 </header>
 </br></br>
 <div>   
 <div id="fullscreen_bg" class="fullscreen_bg"/>
-<div class="container well">
-   <form class="form-signin">
+<div class="container well" style="color:white">
+   <form class="form-signin" action="/subirSTL" id="uplForm" method="post" enctype="multipart/form-data">
     <div class="form-group">
       <label class="form-signin-heading text-muted" for="usr">Nombre del archivo</label>
-      <input type="text" class="form-control" id="usr">
+      <input type="text" class="form" id="filename">
     </div>
     <div class="form-group">
       <label class="form-signin-heading text-muted" for="pwd">Correo electronico</label>
-      <input type="text" class="form-control" id="pwd">
+      <input type="text" class="form" id="email">
     </div>
     <div class="form-group">
-      <label class="form-signin-heading text-muted" style="color:white" for="pwd">Archivo (.stl)</label>
-      <input type="file" class="form-control" id="file">
+      <label class="form-signin-heading text-muted" style="color:white" >Archivo (.stl)</label>
+      <input type="file" class="form" id="file" name="archivoupload">
     </div>
-    <div class="form-group">
+    <div class="form">
         <span>Al subir el archivo estas aceptando nuestros <a href="/legal">  terminos y condiciones</a></span>
     </div>
     <div class="pull-right" style="text-align: center">
-         <button type="button" class="btn btn-secondary" data-toggle="modal" data-backdrop="static" data-keyboard="false" data-target="#myModal" onclick="startUpload()" >Iniciar subida</button>
+         <button type="button" class="btn btn-secondary"  data-backdrop="static" data-keyboard="false" data-target="#myModal" onclick="comprueba_extension(this.form, this.form.archivoupload.value)">Iniciar subida</button>
     </div>
     
   </form>
@@ -75,38 +76,5 @@
 <footer>
     <% include ../partials/footer %>
 </footer>
-<script>
-        function startUpload()
-        {
-            var id = setInterval(frame, 50);
-            var percent = 1;
-            $('.btnprogress').text('Continue')
-            function frame() {
-            if (percent >= 100) {
-              clearInterval(id);
-              $('.btnprogress').text('Close');
-              $('#myModal').modal('hide');
-            } else {
-              percent++; 
-              $('.progress-bar').css('width', percent+'%').attr('aria-valuenow', percent); 
-            }
-          }
-        }
-        
-        function clickProgress()
-        {
-            var progress = $('.btnprogress').text();
-            
-            if(progress =='Continue')
-            {
-                window.open(window.location.href);
-            }
-            else    
-            {
-                 $('#myModal').modal('toggle');
-            }           
-        }
-        
-  </script>
 </body>
 </html>
