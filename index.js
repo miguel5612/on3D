@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 //to upload files 
 var formidable = require('formidable');
-
+var fs = require('fs');
 
 // Server configs
 var port = 8000;
@@ -35,12 +35,17 @@ app.get('/cotizacionEnLinea', function(req, res) {
     res.render('pages/cotizacionEnLinea');
 });
 // Subir tu archivo al SV
-app.get('/subirSTL', function(req, res) {
+app.post('/subirSTL', function(req, res) {
 	var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-      res.write('File uploaded');
-      console.log("Archivo subido con exito :)");
-      res.end();
+      var oldpath = files.archivoupload.path;
+      var newpath = __dirname + "/public/STL/" + files.archivoupload.name;
+      console.log("NEW PATH IS " + newpath);
+      fs.rename(oldpath, newpath, function (err) {
+        if (err) throw err;
+        res.write('File uploaded and moved!');
+        res.end();
+      });
     });
 });
 // about page 
