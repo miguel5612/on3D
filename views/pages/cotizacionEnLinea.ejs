@@ -1,80 +1,45 @@
-<!-- views/pages/index.ejs -->
+<!-- views/pages/cotizadorEnLinea.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <% include ../partials/head %>
+    <link rel="stylesheet" type="text/css" href="../css/3DObjectViewer.css">
 </head>
-<body class="container">
+	<body>
+		<header>
+		    <% include ../partials/header %>
+		    <link rel="stylesheet" type="text/css" href="../css/cotizador.css">
+		    <script type="text/javascript" src="../js/cotizador.js"></script>
+		</header>
+		<br/><br/><br/>
+		<div class="content">
+			<div id="container"></div>
+			<div id="container2" style="margin-top:5%">
+				<span id="densityLabel"></span>:&nbsp;<span id="densityValue"></span>&nbsp;g/cc&nbsp;<input type="submit" class="buttonChanger" onclick="moreDensity(true);" value="+"/>&nbsp;<input type="submit" class="buttonChanger" onclick="moreDensity(false);" value="-"/><br />
+				<span id="weightLabel"></span>:&nbsp;<span id="weightValue"></span>&nbsp;g<br />
+				<span id="volumeLabel"></span>:&nbsp;<span id="volumeValue"></span>&nbsp;cm3<br />
+				<span id="sizeLabel"></span>:&nbsp;<span id="widthValue"></span>&nbsp;x&nbsp;<span id="heightValue"></span>&nbsp;x&nbsp;<span id="depthValue"></span>&nbsp;cm<br />
+				<hr class="separator"/>
+				<span id="costKilogramLabel"></span>:&nbsp;$<span id="costKilogramValue"></span>&nbsp;<input type="submit" class="buttonChanger" onclick="moreCost(true);" value="+"/>&nbsp;<input type="submit" class="buttonChanger" onclick="moreCost(false);" value="-"/><br />
+				<span id="costLabel"></span>:&nbsp;$<span id="costValue"></span><br />
+				<hr class="separator"/>
+				<span id="diameterLabel"></span>:&nbsp;<span id="diameterValue"></span>&nbsp;cm&nbsp;<input type="submit" class="buttonChanger" onclick="moreDiameter(true);" value="+"/>&nbsp;<input type="submit" class="buttonChanger" onclick="moreDiameter(false);" value="-"/><br />
+				<span id="speedLabel"></span>:&nbsp;<span id="speedValue"></span>&nbsp;cm/s&nbsp;<input type="submit" class="buttonChanger" onclick="moreSpeed(true);" value="+"/>&nbsp;<input type="submit" class="buttonChanger" onclick="moreSpeed(false);" value="-"/><br />
+				<span id="lengthLabel"></span>:&nbsp;<span id="lengthValue"></span>&nbsp;cm<br />
+				<span id="timeLabel"></span>:&nbsp;<span id="hoursValue"></span>&nbsp;<span id="hoursLabel"></span>&nbsp;<span id="minutesValue"></span>&nbsp;<span id="minutesLabel"></span><br />
+			</div>
+			<div class="container3">
+				<div class="leftitem">
+					<input type="file" id="modelOBJ" onChange="runViewer();" disabled>
+				</div>
+				<a href="https://github.com/lrusso/3DObjectViewer"><div class="rightitem" id="about"></div></a>
+			</div>
+		</div>
+	<footer>
+	    <% include ../partials/footer %>
+	</footer>
 
-<header>
-    <% include ../partials/header %>
-    <link rel="stylesheet" type="text/css" href="../css/cotizador.css">
-    <script type="text/javascript" src="../js/cotizador.js"></script>
-</header>
-</br></br>
-<div>   
-<div id="fullscreen_bg" class="fullscreen_bg"/>
-<div class="container well" style="color:white">
-   <form class="form-signin" action="/subirSTL" id="uplForm" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-      <label class="form-signin-heading text-muted" for="usr">Nombre del archivo</label>
-      <input type="text" class="form" id="filename">
-    </div>
-    <div class="form-group">
-      <label class="form-signin-heading text-muted" for="pwd">Correo electronico</label>
-      <input type="text" class="form" id="email">
-    </div>
-    <div class="form-group">
-      <label class="form-signin-heading text-muted" style="color:white" >Archivo (.stl)</label>
-      <input type="file" class="form" id="file" name="archivoupload">
-    </div>
-    <div class="form">
-        <span>Al subir el archivo estas aceptando nuestros <a href="/legal">  terminos y condiciones</a></span>
-    </div>
-    <div class="pull-right" style="text-align: center">
-         <button type="button" class="btn btn-secondary"  data-backdrop="static" data-keyboard="false" data-target="#myModal" onclick="comprueba_extension(this.form, this.form.archivoupload.value)">Iniciar subida</button>
-    </div>
-    
-  </form>
-</div>
-
-<!-- Modal -->
-  <div class="form-signin modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">          
-          <h4 class="modal-title">Subida iniciada.</h4>
-        </div>
-        <div class="modal-body">
-          <p>Tu archivo se esta subiendo, por favor espera hasta que se suba completamente.</p>
-          
-          <div class="progress">
-          <div class="progress-bar" role="progressbar" aria-valuenow="70"
-          aria-valuemin="0" aria-valuemax="100" style="width:70%">
-            <span class="sr-only">30% Completo</span>
-          </div>
-        </div>
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-info btnprogress" onclick="clickProgress()">         
-            Continue
-          </button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-
-
-
-</div>
-
-<footer>
-    <% include ../partials/footer %>
-</footer>
-</body>
+		 <script src="../js/3DObjectViewer.js"></script>
+	</body>
 </html>

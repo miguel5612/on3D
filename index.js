@@ -43,12 +43,18 @@ app.post('/subirSTL', function(req, res) {
       console.log("NEW PATH IS " + newpath);
       fs.rename(oldpath, newpath, function (err) {
         if (err) throw err;
-        res.write('File uploaded and moved!');
+        res.redirect("/imprimirCotizacion/"+files.archivoupload.name);
         res.end();
       });
     });
 });
 // about page 
+
+// Visor de archivos 
+app.get('/visorArchivos', function(req, res) {
+    res.render('pages/visorArchivos');
+});
+
 app.get('/about', function(req, res) {
     res.render('pages/about');
 });

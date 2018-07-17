@@ -1,82 +1,444 @@
-function validar(){
-	var filename = document.getElementById("filename");
-	var email = document.getElementById("email");
-	var file = document.getElementById("file");
-	var emailRegex = /^(?:[^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*|"[^\n"]+")@(?:[^<>()[\].,;:\s@"]+\.)+[^<>()[\]\.,;:\s@"]{2,63}$/i;
-	if(filename.value != "" & emailRegex.test(email.value) &  file.value!=""){
-		return true;
-	}else if(filename.value==""){
-		alert("El nombre de archivo es un campo requerido.");
-	}else if(!emailRegex.test(email.value)){
-		alert("El email es un campo requerido");
-	}else if(file.value==""){
-		alert("El archivo .STL es requerido para cotizar");
-	}
-	return false;
-}
+var userLanguage = window.navigator.userLanguage || window.navigator.language;
+var container, camera, scene, renderer, controls, light, vol, mesh, height, heightFinal, width, widthFinal, depth, depthFinal;
+var density = parseFloat("1.05");
+var filament_cost = parseFloat("130000");
+var filament_diameter = parseFloat("1.75"); // en cm
+var printing_speed = parseFloat("100");
+var hotEndSize = 0.2 ; // en mm
 
- function startUpload()
-{
-	if(validar()){
-	    var id = setInterval(frame, 50);
-    	var percent = 1;
-	    $('.btnprogress').text('Continue')
-	    function frame() {
-	    if (percent >= 100) {
-	      clearInterval(id);
-	      $('.btnprogress').text('Close');
-	      $('#myModal').modal('hide');
-	    } else {
-      		percent++; 
-      		$('.progress-bar').css('width', percent+'%').attr('aria-valuenow', percent); 
-    	}
-  	}
-  	document.getElementById("uplForm").submit();
-  }    
-}
+document.addEventListener("DOMContentLoaded", function(event) { 
+      // THE BROWSER LANGUAGE VARIABLE
+      if (userLanguage.substring(0,2)=="es")
+        {
+        document.getElementById("densityLabel").innerHTML = "Densidad";
+        document.getElementById("weightLabel").innerHTML = "Peso";
+        document.getElementById("volumeLabel").innerHTML = "Volumen";
+        document.getElementById("sizeLabel").innerHTML = "Medidas";
+        document.getElementById("costKilogramLabel").innerHTML = "Costo de 1 kilogramo de filamento";
+        document.getElementById("costLabel").innerHTML = "Costo de impresi&oacute;n";
+        document.getElementById("diameterLabel").innerHTML = "Di&aacute;metro del filamento";
+        document.getElementById("speedLabel").innerHTML = "Velocidad de impresi&oacute;n";
+        document.getElementById("lengthLabel").innerHTML = "Longitud de filamento";
+        document.getElementById("timeLabel").innerHTML = "Tiempo de impresi&oacute;n";
+        document.getElementById("hoursLabel").innerHTML = "horas";
+        document.getElementById("minutesLabel").innerHTML = "minutos";
+        document.getElementById("about").innerHTML = "Hecho originalmente LRusso.com - Modificado por Miguel Califa";
+        }
+        else
+        {
+        document.getElementById("densityLabel").innerHTML = "Density";
+        document.getElementById("weightLabel").innerHTML = "Weight";
+        document.getElementById("volumeLabel").innerHTML = "Volume";
+        document.getElementById("sizeLabel").innerHTML = "Size";
+        document.getElementById("costKilogramLabel").innerHTML = "Filament cost per kilogram";
+        document.getElementById("costLabel").innerHTML = "Printing cost";
+        document.getElementById("diameterLabel").innerHTML = "Filament diameter";
+        document.getElementById("speedLabel").innerHTML = "Printing speed";
+        document.getElementById("lengthLabel").innerHTML = "Filament length";
+        document.getElementById("timeLabel").innerHTML = "Build time";
+        document.getElementById("hoursLabel").innerHTML = "hours";
+        document.getElementById("minutesLabel").innerHTML = "minutes";
+        document.getElementById("about").innerHTML = "Originally LRusso.com - Modified by miguel califa.";
+        }
 
 
-function clickProgress()
-{
-    var progress = $('.btnprogress').text();
-    if(progress =='Continue')
-    {
-        window.open(window.location.href);
-    }
-    else    
-    {
-         $('#myModal').modal('toggle');
-    }           
-}
-function comprueba_extension(formulario, archivo) { 
-   extensiones_permitidas = new Array(".stl"); 
-   mierror = ""; 
-   if (!archivo) { 
-      //Si no tengo archivo, es que no se ha seleccionado un archivo en el formulario 
-      	mierror = "No has seleccionado ningún archivo"; 
-   }else{ 
-      //recupero la extensión de este nombre de archivo 
-      extension = (archivo.substring(archivo.lastIndexOf("."))).toLowerCase(); 
-      //alert (extension); 
-      //compruebo si la extensión está entre las permitidas 
-      permitida = false; 
-      for (var i = 0; i < extensiones_permitidas.length; i++) { 
-         if (extensiones_permitidas[i] == extension) { 
-         permitida = true; 
-         break; 
-         } 
-      } 
-      if (!permitida) { 
-         mierror = "Comprueba la extensión de los archivos a subir. \nSólo se pueden subir archivos con extensiones: " + extensiones_permitidas.join(); 
-      	}else{ 
-         	//submito! 
-         validar();
-         alert ("Todo correcto. Voy a submitir el formulario."); 
-         formulario.submit(); 
-         return 1; 
-      	} 
-   } 
-   //si estoy aqui es que no se ha podido submitir 
-   alert (mierror); 
-   return 0; 
-}
+});
+
+
+//Funciones
+
+      function animate()
+        {
+        requestAnimationFrame(animate);
+        light.position.copy(camera.getWorldPosition());
+        renderer.render(scene,camera);
+        }
+
+      function onWindowResize()
+        {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+      function moreDensity(a)
+        {
+        var result;
+        if (a==true)
+          {
+          result = parseFloat(density) + parseFloat("0.05");
+          if (result<=10000)
+            {
+            density = result;
+            }
+          }
+          else
+          {
+          result = parseFloat(density) - parseFloat("0.05");
+          if (result>0)
+            {
+            density = result;
+            }
+          }
+
+        density = parseFloat(density).toFixed(2);
+
+        var heightFinal = height / 10;heightFinal = heightFinal.toFixed(2);
+        var widthFinal = width / 10;widthFinal = widthFinal.toFixed(2);
+        var depthFinal = depth / 10;depthFinal = depthFinal.toFixed(2);
+        var volumeFinal = vol / 1000;volumeFinal = volumeFinal.toFixed(2);
+        var weightFinal = volumeFinal * density;weightFinal = weightFinal.toFixed(2);
+
+        document.getElementById("densityValue").innerHTML = density;
+        document.getElementById("weightValue").innerHTML = weightFinal;
+        document.getElementById("volumeValue").innerHTML = volumeFinal;
+        document.getElementById("widthValue").innerHTML = widthFinal; 
+        document.getElementById("depthValue").innerHTML = depthFinal;
+        document.getElementById("heightValue").innerHTML = heightFinal;
+        updateCost();
+        }
+
+      function moreCost(a)
+        {
+        var result;
+        if (a==true)
+          {
+          result = parseFloat(filament_cost) + parseFloat("5");
+          if (result<=10000)
+            {
+            filament_cost = result;
+            }
+          }
+          else
+          {
+          result = parseFloat(filament_cost) - parseFloat("5");
+          if (result>0)
+            {
+            filament_cost = result;
+            }
+          }
+        document.getElementById("costKilogramValue").innerHTML = filament_cost;
+
+        updateCost();
+        }
+
+      function updateCost()
+        {
+        var volumeFinal = vol / 1000;volumeFinal = volumeFinal.toFixed(2);
+        var weightFinal = volumeFinal * density;weightFinal = weightFinal.toFixed(2);
+        var finalCost = weightFinal * filament_cost / 1000;
+        finalCost = parseFloat(finalCost).toFixed(2);
+        document.getElementById("costValue").innerHTML = finalCost;
+        }
+
+      function moreDiameter(a)
+        {
+        var result;
+        if (a==true)
+          {
+          result = parseFloat(filament_diameter) + parseFloat("0.05");
+          if (result<=10000)
+            {
+            filament_diameter = result;
+            }
+          }
+          else
+          {
+          result = parseFloat(filament_diameter) - parseFloat("0.05");
+          if (result>0)
+            {
+            filament_diameter = result;
+            }
+          }
+
+        filament_diameter = parseFloat(filament_diameter).toFixed(2);
+
+        var filament_length = parseFloat(( vol / ( filament_diameter / 2 ) ^ 2 / Math.PI ) * 2 / 10).toFixed(2);
+        filament_length = parseFloat(filament_length).toFixed(0);
+
+        var hours = Math.floor((filament_length / printing_speed) / 60);
+        hours = parseFloat(hours).toFixed(0);
+
+        var minutes = (filament_length / printing_speed) % 60;
+        minutes = parseFloat(minutes).toFixed(0);
+
+        if (minutes==0){minutes=1;}
+
+        document.getElementById("diameterValue").innerHTML = filament_diameter;
+        document.getElementById("lengthValue").innerHTML = filament_length;
+        document.getElementById("hoursValue").innerHTML = hours;
+        document.getElementById("minutesValue").innerHTML = minutes;
+        }
+
+      function moreSpeed(a)
+        {
+        var result;
+        if (a==true)
+          {
+          result = parseFloat(printing_speed) + parseFloat("5");
+          if (result<=10000)
+            {
+            printing_speed = result;
+            }
+          }
+          else
+          {
+          result = parseFloat(printing_speed) - parseFloat("5");
+          if (result>0)
+            {
+            printing_speed = result;
+            }
+          }
+
+        printing_speed = parseFloat(printing_speed).toFixed(0);
+
+        var filament_length = parseFloat(( vol / ( filament_diameter / 2 ) ^ 2 / Math.PI ) * 2 / 10).toFixed(2);
+
+        var hours = Math.floor((filament_length / printing_speed) / 60);
+        hours = parseFloat(hours).toFixed(0);
+
+        var minutes = (filament_length / printing_speed) % 60;
+        minutes = parseFloat(minutes).toFixed(0);
+
+        document.getElementById("speedValue").innerHTML = printing_speed;
+        document.getElementById("hoursValue").innerHTML = hours;
+        document.getElementById("minutesValue").innerHTML = minutes;
+        }
+
+      function runViewer()
+        {
+        var fileInput = document.getElementById("modelOBJ");
+        if (fileInput.files[0]!=null)
+          {
+          init(fileInput.files[0]);
+          console.log(fileInput.files[0])
+          fileInput.value = null;
+          }
+        }
+
+      window.onload = function()
+        {
+        document.getElementById("modelOBJ").disabled = false;
+        document.getElementById("modelOBJ").value = null;
+        }
+
+
+      function init(file)
+        {
+        container = document.getElementById("container");
+        container.innerHTML= "";
+
+        camera = new THREE.PerspectiveCamera(37.8,window.innerWidth/window.innerHeight,1,100000);
+
+        camera.position.z=300;
+        camera.position.y=-500;
+        camera.position.x=-500;
+        camera.up=new THREE.Vector3(0,0,1);
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x303030);
+
+        var filename = file.name;
+        var extension = filename.split(".").pop().toLowerCase();
+        var reader = new FileReader();
+        console.log(filename);
+        console.log(extension);
+        document.getElementById("container2").style.display="none";
+
+        if (extension=="stl")
+          {
+          reader.readAsArrayBuffer(file);
+          }
+        else if (extension=="3ds")
+          {
+          reader.readAsArrayBuffer(file);
+          }
+        else if (extension=="obj")
+          {
+          reader.readAsText(file);
+          }
+          else
+          {
+          document.getElementById("container2").style.display="none";
+          if (userLanguage.substring(0,2)=="es")
+            {
+            alert("ERROR: Por favor verifique que el modelo se encuentre en formato STL, OBJ o 3DS.");
+            }
+            else
+            {
+            alert("ERROR: Please check that the model is a STL, OBJ or 3DS model.");
+            }
+          }
+
+        reader.addEventListener("load", function (event)
+          {
+          try
+            {
+            var contents = event.target.result;
+            if (extension=="obj")
+              {
+              var object = new THREE.OBJLoader().parse(contents);
+              var sceneConverter = new THREE.Scene();
+              sceneConverter.add(object);
+              var exporter = new THREE.STLExporter();
+              contents = exporter.parse(sceneConverter);
+              }
+            else if (extension=="3ds")
+              {
+              var object = new THREE.TDSLoader().parse(contents);
+              var sceneConverter = new THREE.Scene();
+              sceneConverter.add(object);
+              var exporter = new THREE.STLExporter();
+              contents = exporter.parse(sceneConverter);
+              }
+
+            var geometry = new THREE.STLLoader().parse(contents);
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+            geometry.center();
+
+            var material = new THREE.MeshPhongMaterial({color:0xffffff});
+            mesh = new THREE.Mesh(geometry, material);
+
+            // CALCULATING THE VOLUME
+            vol = 0;
+
+            mesh.traverse(function (child)
+              {
+              if (child instanceof THREE.Mesh)
+                {
+                var positions = child.geometry.getAttribute("position").array;
+                for(var i=0;i<positions.length; i+=9)
+                  {
+                  var t1 = {};
+                  t1.x = positions[i+0];
+                  t1.y = positions[i+1];
+                  t1.z = positions[i+2];
+
+                  var t2 = {};
+                  t2.x = positions[i+3];
+                  t2.y = positions[i+4];
+                  t2.z = positions[i+5];
+
+                  var t3 = {};
+                  t3.x = positions[i+6];
+                  t3.y = positions[i+7];
+                  t3.z = positions[i+8];
+
+                  vol += signedVolumeOfTriangle(t1,t2,t3);
+                  }
+                }
+              });
+            var box = new THREE.Box3().setFromObject(mesh);
+
+            height = box.max.z - box.min.z;
+            width = box.max.x - box.min.x;
+            depth = box.max.y - box.min.y;
+
+            heightFinal = height ;heightFinal = heightFinal.toFixed(2);
+            widthFinal = width ;widthFinal = widthFinal.toFixed(2);
+            depthFinal = depth ;depthFinal = depthFinal.toFixed(2);
+            var volumeFinal = vol / 1000;volumeFinal = volumeFinal.toFixed(2);
+            var weightFinal = volumeFinal * density;weightFinal = weightFinal.toFixed(2);
+
+
+            //Largo del filamento sobre un cuadro sobre la pieza
+
+            //El largo del filamento se calcula como (numero de capas)*(largo de un cuadrado)
+            //Largo del cuadrado es dos veces el ancho y dos veces el largo
+            var filament_length  = (depthFinal/hotEndSize)*((heightFinal*2)+(widthFinal*2)) ;
+            filament_length  = filament_length.toFixed(2);
+            filament_length = filament_length * 2; //correccion en caso que sea compleja o necesite soportes
+            //var filament_length = parseFloat(( vol / ( filament_diameter/20 ) ^ 2 / Math.PI ) * 2 / 10  ).toFixed(2);
+            //filament_length = parseFloat(filament_length).toFixed(0);
+
+            var hours = Math.floor((filament_length*10 / printing_speed) / 60);
+            hours = parseFloat(hours).toFixed(0);
+
+            var minutes = (filament_length*10 / printing_speed) % 60;
+            minutes = parseFloat(minutes).toFixed(0);
+
+            if (minutes==0){minutes=1;}
+
+            var finalCost = weightFinal * filament_cost ;
+            finalCost = parseFloat(finalCost).toFixed(2);
+
+            document.getElementById("container2").style.display="block";
+            document.getElementById("densityValue").innerHTML = density;
+            document.getElementById("weightValue").innerHTML = weightFinal;
+            document.getElementById("volumeValue").innerHTML = volumeFinal;
+            document.getElementById("widthValue").innerHTML = widthFinal; 
+            document.getElementById("depthValue").innerHTML = depthFinal;
+            document.getElementById("heightValue").innerHTML = heightFinal;
+            document.getElementById("costKilogramValue").innerHTML = filament_cost;
+            document.getElementById("costValue").innerHTML = finalCost;
+            document.getElementById("diameterValue").innerHTML = filament_diameter/10;
+            document.getElementById("speedValue").innerHTML = printing_speed/10;
+            document.getElementById("lengthValue").innerHTML = filament_length/10;
+            document.getElementById("hoursValue").innerHTML = hours;
+            document.getElementById("minutesValue").innerHTML = minutes;
+
+            var distance;
+
+            if (height>width && height>depth)
+              {
+              distance = height * 2;
+              }
+            else if (width>height && width>depth)
+              {
+              distance = width * 2;
+              }
+            else if (depth>height && depth>width)
+              {
+              distance = depth * 2;
+              }
+            else
+              {
+              distance = depth * 4;
+              }
+
+            camera.position.set(0, -distance, 0);
+
+            var x = distance + 200;
+            var y = distance + 200;
+            var division_x=Math.floor(x/10);
+            var division_y=Math.floor(y/10);
+
+            var wirePlane=new THREE.Mesh(new THREE.PlaneGeometry(x,y,division_x,division_y),new THREE.MeshPhongMaterial({emissive:0x707070,color:0x000000,wireframe:true,wireframeLinewidth:1}));
+            wirePlane.receiveShadow=true;
+            wirePlane.position.z = box.min.z - 0.1;
+            scene.add(wirePlane);
+
+            // AN ALTERNATIVE FOR MOVING THE OBJECT USING THE MOUSE WITHIN THE RENDERER
+            // controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls = new THREE.OrbitControls(camera);
+            controls.update();
+
+            scene.add(mesh);
+            }
+            catch(err)
+            {
+            document.getElementById("container2").style.display="none";
+            if (userLanguage.substring(0,2)=="es")
+              {
+              alert("ERROR: Por favor verifique que el modelo se encuentre en formato STL, OBJ o 3DS.");
+              }
+              else
+              {
+              alert("ERROR: Please check that the model is a STL, OBJ or 3DS model.");
+              } 
+            }
+          }, false);
+
+        light = new THREE.HemisphereLight(0xE8E8E8,0x000000,1);
+        light.position.set(0,0,0);
+        scene.add(light);
+
+        renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        requestAnimationFrame(animate);
+
+        window.addEventListener("resize", onWindowResize, false );
+        }
