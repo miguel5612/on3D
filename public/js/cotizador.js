@@ -1,9 +1,16 @@
 var userLanguage = window.navigator.userLanguage || window.navigator.language;
 var container, camera, scene, renderer, controls, light, vol, mesh, height, heightFinal, width, widthFinal, depth, depthFinal;
 var density = parseFloat("1.05");
+//Costos
 var filament_cost = parseFloat("130000");
+var pesoFilamento = 1 ; //kg de peso del valor de arriba
+var diaLaboralCost = parseFloat("35000");
+var MantenimientoPorImpresion = parseFloat("1000000");
+var costoLocalArriendo = parseFloat("750000");
+var costoInternoPorIntentos = parseFloat("10000"); //Seguro por fallas de la maquina
+
 var filament_diameter = parseFloat("1.75"); // en cm
-var printing_speed = parseFloat("100");
+var printing_speed = parseFloat("600");
 var hotEndSize = 0.2 ; // en mm
 
 document.addEventListener("DOMContentLoaded", function(event) { 
@@ -15,7 +22,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         document.getElementById("volumeLabel").innerHTML = "Volumen";
         document.getElementById("sizeLabel").innerHTML = "Medidas";
         document.getElementById("costKilogramLabel").innerHTML = "Costo de 1 kilogramo de filamento";
-        document.getElementById("costLabel").innerHTML = "Costo de impresi&oacute;n";
+        document.getElementById("costFilaLabel").innerHTML = "Costo del filamento empleando en la impresi&oacute;n";
+        document.getElementById("costTiempoLabel").innerHTML = "Costo del tiempo en que se realiza la impresi&oacute;n";
+        document.getElementById("costMachLabel").innerHTML = "Costo de Mantenimiento";
+        document.getElementById("costLocalLabel").innerHTML = "Costo del local";
+        document.getElementById("costoSeguro").innerHTML = "Seguro en caso de fallos";
+        document.getElementById("costGeneralLabel").innerHTML = "Costo de impresi&oacute;n";
         document.getElementById("diameterLabel").innerHTML = "Di&aacute;metro del filamento";
         document.getElementById("speedLabel").innerHTML = "Velocidad de impresi&oacute;n";
         document.getElementById("lengthLabel").innerHTML = "Longitud de filamento";
@@ -347,21 +359,47 @@ document.addEventListener("DOMContentLoaded", function(event) {
             //El largo del filamento se calcula como (numero de capas)*(largo de un cuadrado)
             //Largo del cuadrado es dos veces el ancho y dos veces el largo
             var filament_length  = (depthFinal/hotEndSize)*((heightFinal*2)+(widthFinal*2)) ;
-            filament_length  = filament_length.toFixed(2);
-            filament_length = filament_length * 2; //correccion en caso que sea compleja o necesite soportes
+            var top =  (heightFinal/hotEndSize) * widthFinal;
+            var bottom  = top;
+            filament_length = filament_length + top + bottom;
+            filament_length  = (filament_length *2).toFixed(2); //correccion en caso que sea compleja o necesite soportes
             //var filament_length = parseFloat(( vol / ( filament_diameter/20 ) ^ 2 / Math.PI ) * 2 / 10  ).toFixed(2);
             //filament_length = parseFloat(filament_length).toFixed(0);
 
-            var hours = Math.floor((filament_length*10 / printing_speed) / 60);
+            var hours = Math.floor((((filament_length/3)*1*10)/ (printing_speed/3)) / 60); //soportes
+            hours = hours + Math.floor(((filament_length/3)*2*10 / (printing_speed/2)) / 60); // impresion normal
             hours = parseFloat(hours).toFixed(0);
 
-            var minutes = (filament_length*10 / printing_speed) % 60;
+            var minutes = (filament_length*5 / printing_speed) % 60;
             minutes = parseFloat(minutes).toFixed(0);
 
             if (minutes==0){minutes=1;}
 
-            var finalCost = weightFinal * filament_cost ;
-            finalCost = parseFloat(finalCost).toFixed(2);
+            var filaMeters = (pesoFilamento*1000)/(Math.PI * (((filament_diameter/2)/10)^2)*1.04);
+            console.log(filaMeters);
+            console.log(filament_cost/filaMeters);
+            console.log(filament_length/100);
+            var filaCost = (filament_length/1000) * (filament_cost/filaMeters) ; // Costos por el filamento
+            filaCost = parseFloat(filaCost).toFixed(2);
+
+            var hourCost = diaLaboralCost/12; //12 horas de trabajo
+            var minuteCost = hourCost/60; //identifica el costo del minuto
+
+            var timeCost = (hours*hourCost) + (minutes*minuteCost);
+            timeCost = timeCost.toFixed(2);
+
+            //Costos derivados por mantenimiento de la maquina
+
+            var maintenance = MantenimientoPorImpresion/200; //200 impresiones antes del reemplazo de todas sus partes
+            maintenance = maintenance.toFixed(2);
+
+            //Costos por el uso del local comercial (AQUI DEBEN INCLUIRSEN LOS SERVICIOS)
+            var costoLocalHoras = costoLocalArriendo/(30*12); //30 dias, 12 horas
+            var costoLocal = (costoLocalHoras * hours) + ((costoLocalHoras/60)*minutes); 
+            costoLocal = costoLocal.toFixed(2);
+
+            var costoTotal =  parseFloat(filaCost) + parseFloat(timeCost) + parseFloat(maintenance) + parseFloat(costoLocal) + parseFloat(costoInternoPorIntentos);
+            costoTotal = costoTotal.toFixed(2);
 
             document.getElementById("container2").style.display="block";
             document.getElementById("densityValue").innerHTML = density;
@@ -371,10 +409,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
             document.getElementById("depthValue").innerHTML = depthFinal;
             document.getElementById("heightValue").innerHTML = heightFinal;
             document.getElementById("costKilogramValue").innerHTML = filament_cost;
-            document.getElementById("costValue").innerHTML = finalCost;
+            document.getElementById("costValue1").innerHTML = filaCost;
+            document.getElementById("costValue2").innerHTML = timeCost;
+            document.getElementById("costValue3").innerHTML = maintenance;
+            document.getElementById("costValue4").innerHTML = costoLocal;
+            document.getElementById("costValue5").innerHTML = costoTotal;
+            document.getElementById("costValue6").innerHTML = costoInternoPorIntentos;
             document.getElementById("diameterValue").innerHTML = filament_diameter/10;
             document.getElementById("speedValue").innerHTML = printing_speed/10;
-            document.getElementById("lengthValue").innerHTML = filament_length/10;
+            document.getElementById("lengthValue").innerHTML = (filament_length/10).toFixed(2);
             document.getElementById("hoursValue").innerHTML = hours;
             document.getElementById("minutesValue").innerHTML = minutes;
 
