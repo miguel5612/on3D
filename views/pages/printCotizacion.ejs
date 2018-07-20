@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../css/imprimirCotizacion.css">
+	<title>Imprimir cotizacion</title>
+	<head>
+    	<% include ../partials/head %>
+	</head>
+	<header>
+	    <% include ../partials/header %>
+	</header>
+</head>
+<body>
+<br/><br/><br/>
+<div class="container">
+	<div class="tittle"><h1>ON3D Cotizacion</h1></div>
+	<div class="container datosEmpresa">
+		<div >
+			<br>
+			<div class="row">
+				<div class="col-sm"><div><strong>Empresa</strong>: <%- nombreEmpresa %></div></div>
+				<div class="col-sm"><div><strong>Direccion</strong>: <%- direccion %></div></div>
+				<div class="col-sm"><div><strong>Pagar el abono</strong>: <%- fechaPagoAbono %> </div></div>
+			</div>
+			<div class="row">
+				<div class="col-sm"><div><strong>email del proveedor</strong>: <%- emailProveedor %></div></div>
+				<div class="col-sm"><div><strong>email del cliente</strong>: <%- emailCliente %></div></div>
+				<div class="col-sm"><strong>Condiciones</strong>: <a href="/<%- linkCondiciones %>"> <%- nombreEmpresa %></a></div>
+			</div>
+			<br>
+			<div class="row">
+				<table class="table" id="tableCotizacion">
+					<thead class="thead-dark">
+						<tr>
+							<th  scope="col"> Nombre </th>
+							<th  scope="col"> Cantidad </th>
+							<th  scope="col"> Costo Unitario </th>
+							<th  scope="col"> Costo Total </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="table-active">
+							<td><%- servicioImpresion %></td>
+							<td>1</td>
+							<td>$ <%- costoImpresionUni %></td>
+							<td>$ <%- costoImpresionTotal %></td>
+						</tr>
+						<tr class="table-info">
+							<td/><td/><td/>
+							<td>Subtotal: $ <%- costoSubtotal %></td>
+						</tr>
+						<tr class="table-info">
+							<td/><td/><td/>
+							<td>porcentaje de impuestos: <%- porcentajeImputestos %></td>
+						</tr>
+						<tr class="table-info">
+							<td/><td/><td/>
+							<td>Total de impuestos: $ <%- costoImpuesto %></td>
+						</tr>
+						<tr class="table-success">
+							<td/><td/><td/>
+							<td>Costo total: $ <%- costoTotal %></td>
+						</tr>
+						<tr class="table-success">
+							<td/><td/><td/>
+							<td>Abono inicial: $ <%- costoAbono %></td>
+						</tr>
+						<tr class="table-success">
+							<td/><td/><td/>
+							<td>Fecha de entrega: <%- fechaEntrega %></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			</div>
+	</div>
+</div>
+<footer>
+    <% include ../partials/footer %>
+</footer>
+</body>
+</html>

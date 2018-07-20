@@ -4,6 +4,8 @@ var app = express();
 //to upload files 
 var formidable = require('formidable');
 var fs = require('fs');
+//formateo de la fecha
+var dateFormat = require('dateformat');
 
 // Server configs
 var port = 8000;
@@ -43,12 +45,36 @@ app.post('/subirSTL', function(req, res) {
       console.log("NEW PATH IS " + newpath);
       fs.rename(oldpath, newpath, function (err) {
         if (err) throw err;
-        res.redirect("/imprimirCotizacion/"+files.archivoupload.name);
-        res.end();
+        var nombreArchivo = files.archivoupload.name;
+        console.log(fields);
+        var porcentajeImputestosVar = 0;
+        var costoImpuestoVar = parseInt(porcentajeImputestosVar) * parseInt(fields.costoGeneral);
+        res.render('pages/printCotizacion',{
+          servicioImpresion : "Impresion 3D ("+files.archivoupload.name+")",
+          costoImpresionUni : fields.costoGeneral,
+          costoImpresionTotal : fields.costoGeneral,
+          porcentajeImputestos : porcentajeImputestosVar,
+          costoImpuesto : costoImpuestoVar,
+          costoSubtotal : parseInt(fields.costoGeneral),
+          costoTotal : parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar),
+          costoAbono :  (parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar))/2,
+          nombreEmpresa: "CED 3D",
+          linkCondiciones: "CEDLEGAL",
+          direccion: "calle 22 numero barrio nn",
+          fechaEntrega: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
+          fechaPagoAbono: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
+          emailCliente: "client@customer.com",
+          emailProveedor: "proveedor@hotmail.com"
+        });
       });
     });
 });
 // about page 
+
+// Visor de archivos 
+app.get('/imprimirCotizacion', function(req, res) {
+    res.render('pages/printCotizacion');
+});
 
 // Visor de archivos 
 app.get('/visorArchivos', function(req, res) {

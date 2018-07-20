@@ -1,8 +1,33 @@
+.container3{
+  height: 15%;
+}
+#modelOBJ{
+  height: 100% !important;
+  width:100% !important;
+  font-size:12pt;
+}
   body {
     padding-top: 120px;
     padding-bottom: 40px;
     background-color: #eee;
   
+  }
+  .buttonChanger{
+    visibility: hidden;
+  }
+  .hideClient{
+    display: none;
+  }
+  .inputPrice{
+    width:20%!important;
+  }
+  input{
+    width: 6%;
+    height: 11% !important;
+    background:rgba(0,0,0,0);
+    height: 11%;
+    color: white;
+    border: none;
   }
   .btn 
   {

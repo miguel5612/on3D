@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
       // THE BROWSER LANGUAGE VARIABLE
       if (userLanguage.substring(0,2)=="es")
         {
+        document.getElementById("btnSubmit").disabled = true;
         document.getElementById("densityLabel").innerHTML = "Densidad";
         document.getElementById("weightLabel").innerHTML = "Peso";
         document.getElementById("volumeLabel").innerHTML = "Volumen";
@@ -224,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
           {
           init(fileInput.files[0]);
           console.log(fileInput.files[0])
-          fileInput.value = null;
+          //fileInput.value = null;
           }
         }
 
@@ -402,24 +403,25 @@ document.addEventListener("DOMContentLoaded", function(event) {
             costoTotal = costoTotal.toFixed(2);
 
             document.getElementById("container2").style.display="block";
-            document.getElementById("densityValue").innerHTML = density;
-            document.getElementById("weightValue").innerHTML = weightFinal;
-            document.getElementById("volumeValue").innerHTML = volumeFinal;
-            document.getElementById("widthValue").innerHTML = widthFinal; 
-            document.getElementById("depthValue").innerHTML = depthFinal;
-            document.getElementById("heightValue").innerHTML = heightFinal;
-            document.getElementById("costKilogramValue").innerHTML = filament_cost;
-            document.getElementById("costValue1").innerHTML = filaCost;
-            document.getElementById("costValue2").innerHTML = timeCost;
-            document.getElementById("costValue3").innerHTML = maintenance;
-            document.getElementById("costValue4").innerHTML = costoLocal;
-            document.getElementById("costValue5").innerHTML = costoTotal;
-            document.getElementById("costValue6").innerHTML = costoInternoPorIntentos;
+            document.getElementById("densityValue").value = density;
+            document.getElementById("weightValue").value = weightFinal;
+            document.getElementById("volumeValue").value = volumeFinal;
+            document.getElementById("widthValue").value = widthFinal; 
+            document.getElementById("depthValue").value = depthFinal;
+            document.getElementById("heightValue").value = heightFinal;
+            document.getElementById("costKilogramValue").value = filament_cost;
+            document.getElementById("costValue1").value = filaCost;
+            document.getElementById("costValue2").value = timeCost;
+            document.getElementById("costValue3").value = maintenance;
+            document.getElementById("costValue4").value = costoLocal;
+            document.getElementById("costValue5").value = parseInt(costoTotal);
+            document.getElementById("costValue6").value = costoInternoPorIntentos;
             document.getElementById("diameterValue").innerHTML = filament_diameter/10;
             document.getElementById("speedValue").innerHTML = printing_speed/10;
             document.getElementById("lengthValue").innerHTML = (filament_length/10).toFixed(2);
             document.getElementById("hoursValue").innerHTML = hours;
             document.getElementById("minutesValue").innerHTML = minutes;
+            document.getElementById("btnSubmit").disabled = false;
 
             var distance;
 
