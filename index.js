@@ -108,17 +108,55 @@ app.post('/imprimirPieza', function(req, res) {
 
 // Pagina principal de usuarios 
 app.get('/main', function(req, res) {
-    res.render('pages/paginaPrincipal');
+    res.render('pages/paginaPrincipal', {
+      main:'active',
+      pendent: '',
+      registrarFilamento: '',
+      registrarImpresora: '',
+      sistemaSupervision: ''
+    });
 });
 // Trabajo pendiente 
 app.get('/pendent', function(req, res) {
-    res.render('pages/trabajoPendiente');
+    res.render('pages/trabajoPendiente', {
+      main:'',
+      pendent: 'active',
+      registrarFilamento: '',
+      registrarImpresora: '',
+      sistemaSupervision: ''
+    });
 });
 // registrar filamento 
 app.get('/registrarFilamento', function(req, res) {
-    res.render('pages/registrarFilamento');
+    res.render('pages/registrarFilamento', {
+      main:'',
+      pendent: '',
+      registrarFilamento: 'active',
+      registrarImpresora: '',
+      sistemaSupervision: ''
+    });
 });
 
+// registrar impresora 
+app.get('/registrarImpresora', function(req, res) {
+    res.render('pages/registrarImpresora', {
+      main:'',
+      pendent: '',
+      registrarFilamento: '',
+      registrarImpresora: 'active',
+      sistemaSupervision: ''
+    });
+});
+// sistema de supervision 
+app.get('/sistemaSupervision', function(req, res) {
+    res.render('pages/sistemaSupervision', {
+      main:'',
+      pendent: '',
+      registrarFilamento: '',
+      registrarImpresora: '',
+      sistemaSupervision: 'active'
+    });
+});
 
 
 
