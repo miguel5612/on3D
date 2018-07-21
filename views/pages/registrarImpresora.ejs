@@ -24,35 +24,19 @@
 		<div class="row">
 			<div class="col-md-3">
 				<% include ../partials/menuAdmin %>
-
-				<div class="well">
-					<h4>Filamento restante</h4>
-					<div class="progress">
-					<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-					60%
-					</div>
-					</div>
-					<h4>Ingresos mensuales</h4>
-					<div class="progress">
-					<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 40%;">
-					40%
-					</div>
-					</div>
-				</div>
 			</div>
 			<div class="col-md-9">
 				<div class="panel panel-default">
 				<div class="panel-heading" style="background-color:  #095f59;">
-				<h3 class="panel-title">Agregar filamento</h3>
+				<h3 class="panel-title">Agregar impresora</h3>
 				</div>
 					<div style="margin:2%;padding: 1%;">
 						<div>
 							<br>
-							<div><label>Color:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label><input class="jscolor" name="color" value="ab2567"/></div>
-							<div><label>Nª de metros:&nbsp&nbsp&nbsp&nbsp&nbsp</label> <input type="text" name="metros"/></div>
-							<div><label>Peso en gramos:&nbsp</label><input type="text" name="gramos"/></div>
-							<br>
+							<div><label>Nombre de la impresora:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label> <input type="text" name="printerName"/></div>
+							<div><label>Tamaño de la cama caliente (ej. 20x20x10):&nbsp&nbsp</label><input type="text" name="tamanoImpresora"/></div>
 							<div class="radio">
+								<label>Tipos de material que se pueden imprimir: &nbsp&nbsp&nbsp&nbsp</label>
 								  <label class="radio-inline"><input type="radio" id="PLA" checked name="chk1">PLA</label>
 								  <label class="radio-inline"><input type="radio" id="ABS" name="chk1">ABS</label>
 								  <label class="radio-inline"><input type="radio" id="Flexible" name="chk1">Flexible</label>
@@ -63,24 +47,25 @@
 				</div>
 				<div class="panel panel-default" style="margin-left:2%;height: 50%">
 				<div class="panel-heading" style="background-color:  #095f59;">
-				<h3 class="panel-title">Filamentos existentes</h3>
+				<h3 class="panel-title">Impresoras registradas</h3>
 				</div>
+				<br>
 				<div class="col-md-3">
 					<div class="well dash-box">
-						<h2><img src="/icons/filamento.ico" style="width: 80px;height: 80px;"><span class="" aria-hidden="true"/><div></div></span>&nbsp&nbsp 100 Mt </h2>
-						 <h4>ABS <input style="width: 90px;height: 30px;" class="jscolor" name="color" value="ab2567"/></h4>
+						<h2><img src="/icons/printer.ico" style="width: 80px;height: 80px;"><span class="" aria-hidden="true"/><div></div></span>&nbsp&nbsp Printmate3D </h2>
+						 <h4>Prusa</h4>
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class="well dash-box">
-						<h2><img src="/icons/filamento.ico" style="width: 80px;height: 80px;"/><div></div><span class="" aria-hidden="true"></span>&nbsp&nbsp 200 Mt </h2>
-						<h4>PLA <input style="width: 90px;height: 30px;" class="jscolor" name="color" value="ab2567"/>  </h4>
+						<h2><img src="/icons/printer.ico" style="width: 80px;height: 80px;"/><div></div><span class="" aria-hidden="true"></span>&nbsp&nbsp Delta </h2>
+						<h4>Kossel</h4>
 					</div>
 				</div>
 				<div class="col-md-3">
 					<div class="well dash-box">
-						<h2><img src="/icons/filamento.ico" style="width: 80px;height: 80px;"/><div></div><span class="" aria-hidden="true"></span>&nbsp&nbsp 150 Mt</h2>
-						<h4>PLA <input style="width: 90px;height: 30px;" class="jscolor" name="color" value="ab2567"/></h4>
+						<h2><img src="/icons/printer.ico" style="width: 80px;height: 80px;"/><div></div><span class="" aria-hidden="true"></span>&nbsp&nbsp Davinci 3D</h2>
+						<h4>1.0</h4>
 					</div>
 				</div>	
 
