@@ -110,6 +110,18 @@ app.post('/imprimirPieza', function(req, res) {
 app.get('/main', function(req, res) {
     res.render('pages/paginaPrincipal');
 });
+// Trabajo pendiente 
+app.get('/pendent', function(req, res) {
+    res.render('pages/trabajoPendiente');
+});
+// registrar filamento 
+app.get('/registrarFilamento', function(req, res) {
+    res.render('pages/registrarFilamento');
+});
+
+
+
+
 
 // Visor de archivos 
 app.get('/imprimirCotizacion', function(req, res) {
