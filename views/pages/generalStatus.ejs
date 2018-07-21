@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../css/bootsMain.css">
+	<link rel="stylesheet" type="text/css" href="../css/paginaPrincipal.css">
+	<title>Imprimir cotizacion</title>
+<head>
+	<% include ../partials/head %>
+</head>
+<header>
+	<% include ../partials/header %>
+</header>
+<script type="text/javascript" src="../js/paginaPrincipal.js">
+</script>
+<style type="text/css">
+	.clientHide{
+		display:none;
+	}
+</style>
+</head>
+<body>
+<br><br><br><br>
+<section id="main">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3">
+				<% include ../partials/menuAdmin %>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+				<div class="panel-heading" style="background-color:  #095f59;">
+				<h3 class="panel-title">Sistema de supervision</h3>
+				</div>
+					<div style="margin:2%;padding: 1%;">
+						<div>
+							<br>
+							<div><label>impresora 3D: </label><h4>DELTA KOSSEL</h4></div>
+						</div>
+					</div>
+				</div>
+				<% include ../partials/reporteMonitoreoItems %>
+		</div>
+	</div>
+</section>
+
+<footer>
+<% include ../partials/footer %>
+</footer>
+</body>
+</html>
+</html>

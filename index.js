@@ -159,6 +159,28 @@ app.get('/sistemaSupervision', function(req, res) {
 });
 
 
+// Visor del sistema de supervision  (general)
+app.get('/generalStatus', function(req, res) {
+    res.render('pages/generalStatus' ,{
+      main:'',
+      pendent: '',
+      registrarFilamento: '',
+      registrarImpresora: '',
+      sistemaSupervision: 'active'
+    });
+});
+
+
+// Visor de una temperatura especifica 
+app.get('/mostrarTemperatura', function(req, res) {
+    res.render('pages/mostrarTemperatura',{
+      main:'',
+      pendent: '',
+      registrarFilamento: '',
+      registrarImpresora: '',
+      sistemaSupervision: 'active'
+    });
+});
 
 
 // Visor de archivos 
