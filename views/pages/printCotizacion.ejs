@@ -9,14 +9,30 @@
 	<header>
 	    <% include ../partials/header %>
 	</header>
+	<script type="text/javascript" src="../js/imprimirCotizacion.js"></script>
+	<style type="text/css">
+		.clientHide{
+			display:none;
+		}
+	</style>
 </head>
 <body>
 <br/><br/><br/>
 <div class="container">
 	<div class="tittle"><h1>ON3D Cotizacion</h1></div>
 	<div class="container datosEmpresa">
-		<div >
+		<form action="/imprimirPieza" method="POST" id="formCotizacion">
 			<br>
+				<input type="text" class="clientHide" name="nombreEmpresa" text="<%- nombreEmpresa %>"/>
+				<input type="text" class="clientHide" name="direccion" text="<%- direccion %>"/>
+				<input type="text" class="clientHide" name="fechaPagoAbono" text="<%- fechaPagoAbono %>"/>
+				<input type="text" class="clientHide" name="emailProveedor" text="<%- emailProveedor %>"/>
+				<input type="text" class="clientHide" name="emailCliente" text="<%- emailCliente %>"/>
+				<input type="text" class="clientHide" name="porcentajeImputestos" text="<%- porcentajeImputestos %>"/>
+				<input type="text" class="clientHide" name="costoImpuesto" text="<%- costoImpuesto %>"/>
+				<input type="text" class="clientHide" name="costoTotal" text="<%- costoTotal %>"/>
+				<input type="text" class="clientHide" name="costoAbono" text="<%- costoAbono %>"/>
+				<input type="text" class="clientHide" name="fechaEntrega" text="<%- fechaEntrega %>"/>
 			<div class="row">
 				<div class="col-sm"><div><strong>Empresa</strong>: <%- nombreEmpresa %></div></div>
 				<div class="col-sm"><div><strong>Direccion</strong>: <%- direccion %></div></div>
@@ -26,6 +42,10 @@
 				<div class="col-sm"><div><strong>email del proveedor</strong>: <%- emailProveedor %></div></div>
 				<div class="col-sm"><div><strong>email del cliente</strong>: <%- emailCliente %></div></div>
 				<div class="col-sm"><strong>Condiciones</strong>: <a href="/<%- linkCondiciones %>"> <%- nombreEmpresa %></a></div>
+			</div>
+			<br>
+			<div class="row">
+				<div class="col-md"><button onclick="solicitarImpresion()" class="btn btn-success">Solicitar impresion!</button></div>
 			</div>
 			<br>
 			<div class="row">
@@ -72,7 +92,7 @@
 					</tbody>
 				</table>
 			</div>
-			</div>
+			</form>
 	</div>
 </div>
 <footer>

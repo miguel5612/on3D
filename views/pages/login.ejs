@@ -12,22 +12,47 @@
     <link rel="stylesheet" type="text/css" href="../css/login.css">
 </header>
 </br></br>
-<div>	
-<div id="fullscreen_bg" class="fullscreen_bg"/>
 
-<div class="container">
+ <div class="main" style="padding:2%;margin-top:5%;">        	
+ <div class="col-lg-12">
+         <div class="container">          	 
+               <div class="col-lg-4"></div>
+				 <div class="col-lg-4">
+				 <div class="row grids text-center">
+					<div class="view view-tenth">
+					    <!--  <a href="single.html">-->
+						   <div class="inner_content clearfix">
+					<div class="product_image">
+						<img src="../img/user@2x.png" class="img-responsive" alt="" style="margin:0% auto;"/>
+                     </div>
+					<div class="label-product">
+						<span class="new">Registro o inicio de sesion</span> 
+					</div>
+					<div class="mask" style="width:100% !important;">
+						<h2>Bienvenido usuario</h2>
+                        <div class="main">
+							<form method="POST" action="/iniciarSesion">
+							<input type="text" class="text" name="email" value="E-mail address" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Correo electronico';}" >
+							<input type="password" name="contrasena" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'contraseña';}">
+							<div class="radio">
+							  <label class="radio-inline"><input type="radio" id="login" checked name="chk1">Iniciar Sesion</label>
+							  <label class="radio-inline"><input type="radio" id="register" name="chk1">Registrarse</label>
+							</div>
+							<div class="submit"><input type="submit" onclick="myFunction()" value="iniciar sesion" ></div>
+							<div class="clearfix"></div>
+							</form>
+						</div>
+					</div>
+							
+			        </div>
+					</div>
+			        </div>
+				    <!--  </a> -->
+				</div>
+		</div>
+		<div class="col-lg-4"></div>
+        </div>
 
-	<form class="form-signin">
-		<h1 class="form-signin-heading text-muted">Iniciar sesion</h1>
-		<input type="text" class="form-control" placeholder="Direccion de correo electronico" required="" autofocus="">
-		<input type="password" class="form-control" placeholder="contraseña" required="">
-		<button class="btn btn-lg btn-secondary btn-block" type="submit">
-			Iniciar Sesion
-		</button>
-	</form>
-
-</div>
-</div>
 
 <footer>
     <% include ../partials/footer %>
