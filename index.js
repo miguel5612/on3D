@@ -68,7 +68,7 @@ var tempInput = "";
 var divFinal2 = "";
 // index page 
 app.get('/', function(req, res) {
-    var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario";
+    var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario and usuario.usuarioActivo=1";
     con.query(consulta, function (err, rows) {  
       rows.forEach(function(row) {
       tempDiv = option;
@@ -88,7 +88,7 @@ app.get('/', function(req, res) {
     });
 });
 app.get('/index.html', function(req, res) {
-    var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario";
+    var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario and usuario.usuarioActivo=1";
     con.query(consulta, function (err, rows) {  
       rows.forEach(function(row) {
       tempDiv = option;
