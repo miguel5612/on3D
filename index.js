@@ -6,6 +6,20 @@ var formidable = require('formidable');
 var fs = require('fs');
 //formateo de la fecha
 var dateFormat = require('dateformat');
+//Conexion mySQL
+var mysql = require('mysql');
+//SQL Configuration
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "admin",
+  password: "admin",
+  port:3306
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
 
 // Server configs
 var port = 8000;
