@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../css/bootsMain.css">
+	<link rel="stylesheet" type="text/css" href="../css/paginaPrincipal.css">
+	<title>Imprimir cotizacion</title>
+<head>
+	<% include ../partials/head %>
+</head>
+<header>
+	<% include ../partials/header %>
+</header>
+<script type="text/javascript" src="../js/paginaPrincipal.js"></script>
+<style type="text/css">
+	.clientHide{
+		display:none;
+	}
+</style>
+</head>
+<body>
+<br><br><br><br>
+<section id="main">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-3">
+				<% include ../partials/menuAdmin %>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+				<div class="panel-heading" style="background-color:  #095f59;">
+				<h3 class="panel-title">Agregar impresora</h3>
+				</div>
+					<div style="margin:2%;padding: 1%;">
+						<div>
+							<form method="post" action="/agregarFilamento">
+								     	<div class="control-group">
+							              <label>Filamento</label>
+							              <div class="controls">
+							                <select name="selectFilamento" class="form-control">
+							                	<option name="opt1"> PLA </option>
+							                	<option name="opt2"> ABS </option>
+							                </select>
+							              </div>
+							            </div>
+							            <br>
+							<button type="submit" class="btn btn-success">Agregar nuevo filamento</button>
+							</form>
+							<br>
+							<form method="post" action="/eliminarImpresora">
+								<div class="control-group">
+									<input type="text" name="idImpresora"/>
+									<button type="submit" class="btn btn-success">Eliminar impresora</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				
+		</div>
+	</div>
+</section>
+
+<footer>
+<% include ../partials/footer %>
+</footer>
+</body>
+</html>
+</html>

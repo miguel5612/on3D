@@ -184,6 +184,37 @@ app.get('/mostrarTemperatura', function(req, res) {
 
 
 // Visor de archivos 
+app.get('/reporteImpresion', function(req, res) {
+    res.render('pages/reportarIntento',{
+      main:'',
+      pendent: 'active',
+      registrarFilamento: '',
+      registrarImpresora: '',
+      sistemaSupervision: ''
+    });
+});
+
+// Agregar filamento a impresora 
+app.get('/configurarFilamento', function(req, res) {
+    res.render('pages/configurarFilamento',{
+      main:'',
+      pendent: '',
+      registrarFilamento: '',
+      registrarImpresora: 'active',
+      sistemaSupervision: ''
+    });
+});
+
+
+
+
+// Intento de impresion 
+app.post('/enviarIntento', function(req, res) {
+    //si la impresion salio bien se debe imprimir la factura y enviar al correo del cliente
+    res.render('pages/facturaEnLinea');
+});
+
+// Visor de archivos 
 app.get('/imprimirCotizacion', function(req, res) {
     res.render('pages/printCotizacion');
 });

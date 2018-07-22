@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../css/bootsMain.css">
+	<link rel="stylesheet" type="text/css" href="../css/paginaPrincipal.css">
+	<title>Imprimir cotizacion</title>
+	<head>
+    	<% include ../partials/head %>
+	</head>
+	<header>
+	    <% include ../partials/header %>
+	</header>
+	<script type="text/javascript" src="../js/paginaPrincipal.js"></script>
+	<style type="text/css">
+		.clientHide{
+			display:none;
+		}
+	</style>
+</head>
+<body>
+	<br><br><br><br>
+	<section id="main">
+	  <div class="container">
+	    <div class="row">
+	      <div class="col-md-3">
+	        <% include ../partials/menuAdmin %>
+	      </div>
+	      <div class="col-md-9">
+	          <div class="panel panel-default">
+	  <div class="panel-heading" style="background-color:  #095f59;">
+	    <h3 class="panel-title">Panel principal</h3>
+	  </div>
+	  <div class="panel-body">
+	   <div class="col-md-9">
+	     <form method="post" class="form" action="/enviarIntento">
+	     	
+	     	<div class="control-group">
+              <label>Ingrese el porcentaje de impresion que se ha realizado</label>
+              <div class="controls">
+                <input type="text" class="form-control" name="porcentajeImpresion" placeholder="Ingrese el porcentaje (0-100%)">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label>Ingrese el motivo por el cual fallo la impresion</label>
+              <div class="controls">
+                <input type="text" class="form-control" name="falloImpresion" placeholder="Motivo (Puede dejarlo vacio si la impresion se ha realizado exitosamente)">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label>Cuanto tiempo se tardo la impresion</label>
+              <div class="controls">
+                <input type="text" name="timePrint" class="form-control" placeholder="Tiempo de impresion empleado (Este campo no es obligatorio)">
+              </div>
+            </div>
+
+
+            <div class="control-group">
+              <label>Con que impresora realizo la impresion?</label>
+              <select class="form-control" name="selectPrint">
+              	<option name="print 1">PRINTMATE</option>
+              	<option name="print 2">PRUSA</option>
+              	<option name="print 3	">DELTA KOSSEL</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label>la impresion se realizo correctamente?</label>
+              <input type="checkbox" name="impresionTotal">
+            </div>
+
+            <div class="control-group">
+            	<button type="submit">Enviar intento</button>
+            </div>
+
+	     </form>
+	  </div>
+	</div>
+	<!--Latest User-->
+	
+	      </div>
+	    </div>
+	  </div>
+	</section>
+
+<footer>
+    <% include ../partials/footer %>
+</footer>
+</body>
+</html>
+</html>
