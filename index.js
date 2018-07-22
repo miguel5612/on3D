@@ -330,18 +330,40 @@ app.get('/configurarFilamento', function(req, res) {
       sistemaSupervision: ''
     });
 });
-// Agregar filamento a impresora 
+// Agregar filamento a impresora
+var divFilamento = "<form id='eliminarFilamento@filaID'><div class='col-md-3'><div class='well dash-box'><h2>@filanombre</h2><h2><img src='/icons/filamento.ico' style='width: 80px;height: 80px;'/><div></div><span class=' aria-hidden='true'></span>&nbsp&nbsp @filaLargo Mt </h2><h4>@filaTipo <input style='width: 90px;height: 30px;' class='jscolor' name='color' value='@filaColor'/>  </h4></div></div></form>";
+var divFilaTemp = "";
+var divFilaFinal = ""; 
 app.post('/registrarFilamento', function(req, res) {
     var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
       var idPrinter = fields.idImpresora;
-      res.render('pages/registrarFilamento',{
-        main:'',
-        pendent: '',
-        registrarFilamento: '',
-        registrarImpresora: 'active',
-        sistemaSupervision: '',
-        idImpresora: idPrinter
+      consulta = "SELECT * FROM `filamento` WHERE idImpresora ="+idPrinter+" and idUsuario="+req.session.usrID;
+      console.log(consulta);
+      con.query(consulta, function (err, rows) {
+        if (err) throw err;
+        divFilaFinal = ""; //En este div quedan las etiquetas finales
+        divFilaTemp = ""; //En este div se cargan los datos temporalmente
+        rows.forEach(function(row) {
+          divFilaTemp = divFilamento;
+          divFilaTemp = divFilaTemp.replace('@filaID',row.idFilamento);
+          divFilaTemp = divFilaTemp.replace('@filanombre',row.nombreFilamento);
+          divFilaTemp = divFilaTemp.replace('@filaLargo',row.numeroMetros);
+          divFilaTemp = divFilaTemp.replace('@filaColor',row.colorFilamento);
+          divFilaTemp = divFilaTemp.replace('@filaTipo',row.tipoFilamento);
+          divFilaFinal += divFilaTemp;
+        });        
+          //console.log(divFilaFinal);
+          res.render('pages/registrarFilamento',{
+            main:'',
+            pendent: '',
+            registrarFilamento: '',
+            registrarImpresora: 'active',
+            sistemaSupervision: '',
+            idImpresora: idPrinter,
+            filamentos: divFilaFinal
+          
+        });
       });
   });
 });
@@ -363,18 +385,37 @@ app.post('/agregarFilamento', function(req, res) {
     //console.log(consulta);
     con.query(consulta, function (err, rows) {
     if (err) throw err;
-    res.render('pages/registrarFilamento',{
+
+    consulta = "SELECT * FROM `filamento` WHERE idImpresora ="+fields.idImpresora+" and idUsuario="+req.session.usrID;
+    console.log(consulta);
+    con.query(consulta, function (err, rows) {
+      if (err) throw err;
+      divFilaFinal = ""; //En este div quedan las etiquetas finales
+      divFilaTemp = ""; //En este div se cargan los datos temporalmente
+      rows.forEach(function(row) {
+        divFilaTemp = divFilamento;
+        divFilaTemp = divFilaTemp.replace('@filaID',row.idFilamento);
+        divFilaTemp = divFilaTemp.replace('@filanombre',row.nombreFilamento);
+        divFilaTemp = divFilaTemp.replace('@filaLargo',row.numeroMetros);
+        divFilaTemp = divFilaTemp.replace('@filaColor',row.colorFilamento);
+        divFilaTemp = divFilaTemp.replace('@filaTipo',row.tipoFilamento);
+        divFilaFinal += divFilaTemp;        
+      });
+      console.log(divFilaFinal);
+      res.render('pages/registrarFilamento',{
         main:'',
         pendent: '',
         registrarFilamento: 'active',
         registrarImpresora: '',
         sistemaSupervision: '',
-        idImpresora: fields.idImpresora
-      });
-    });  
+        idImpresora: fields.idImpresora,
+        filamentos: divFilaFinal
+      
+      });  
     });
-   }
-   else{
+  });
+ });
+}else{
     res.redirect("/index.html");
    }
  });
