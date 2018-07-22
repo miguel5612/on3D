@@ -59,12 +59,37 @@ app.set('view engine', 'ejs');
 
 // use res.render to load up an ejs view file
 
+var option = "<option style='background: rgba(0, 0, 0, 0.3);' value='@value'>@nombre</option>";
+var tempDiv = "";
+var divFinal = "";
 // index page 
 app.get('/', function(req, res) {
-    res.render('pages/index');
+    var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario";
+    con.query(consulta, function (err, rows) {  
+      rows.forEach(function(row) {
+      tempDiv = option;
+      tempDiv = tempDiv.replace('@value',row.idusuario);
+      tempDiv = tempDiv.replace('@nombre',row.nombreEmpresa);
+      divFinal = tempDiv;
+      });
+      res.render('pages/index',{
+        empresas: divFinal
+      });
+    });
 });
 app.get('/index.html', function(req, res) {
-    res.render('pages/index');
+    var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario";
+    con.query(consulta, function (err, rows) {  
+      rows.forEach(function(row) {
+      tempDiv = option;
+      tempDiv = tempDiv.replace('@value',row.idusuario);
+      tempDiv = tempDiv.replace('@nombre',row.nombreEmpresa);
+      divFinal = tempDiv;
+      });
+      res.render('pages/index',{
+        empresas: divFinal
+      });
+    });
 });
 
 app.post('/registrarEmpresa', function(req, res) {
