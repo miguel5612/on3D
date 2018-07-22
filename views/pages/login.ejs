@@ -4,6 +4,7 @@
 <html lang="en">
 <head>
     <% include ../partials/head %>
+    <script type="text/javascript" src="/js/chkValidadorOneSelected.js"></script>
 </head>
 <body class="container">
 
@@ -35,8 +36,8 @@
 							<input type="text" class="text" name="email" value="E-mail address" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'Correo electronico';}" >
 							<input type="password" name="contrasena" value="Password" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'contraseña';}">
 							<div class="radio">
-							  <label class="radio-inline"><input type="radio" id="login" checked name="chk1">Iniciar Sesion</label>
-							  <label class="radio-inline"><input type="radio" id="register" name="chk1">Registrarse</label>
+							  <label class="radio-inline"><input type="radio" id="chkLogin1"checked onclick="chk1Click()" name="chk1">Iniciar Sesion</label>
+							  <label class="radio-inline"><input type="radio" id="chkLogin2" onclick="chk2Click()" name="chk2">Registrarse</label>
 							</div>
 							<div class="submit"><input type="submit" onclick="myFunction()" value="iniciar sesion" ></div>
 							<div class="clearfix"></div>

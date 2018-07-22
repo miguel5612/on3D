@@ -13,7 +13,8 @@ var con = mysql.createConnection({
   host: "localhost",
   user: "admin",
   password: "admin",
-  port:3306
+  port:3306,
+  database:"ON3D"
 });
 
 con.connect(function(err) {
@@ -23,6 +24,20 @@ con.connect(function(err) {
 
 // Server configs
 var port = 8000;
+//Sesiones en nodejs
+var cookieParser = require('cookie-parser');
+const session = require('express-session');
+app.use(cookieParser());
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: false, // Secure is Recommeneded, However it requires an HTTPS enabled website (SSL Certificate)
+        maxAge: 864000000 // 10 Days in miliseconds
+    }
+}))
+
 
 // set static folder
 
@@ -52,6 +67,69 @@ app.get('/login', function(req, res) {
 app.get('/cotizacionEnLinea', function(req, res) {
     res.render('pages/cotizacionEnLinea');
 });
+//registro e inicio de sesion
+app.post('/iniciarSesion', function(req, res) {
+  var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      console.log(fields);
+      if(fields.chk1){
+        consulta = "SELECT idUsuario FROM usuario WHERE email = '"+fields.email+"' AND contrasena='"+fields.contrasena+"'";
+        con.query(consulta, function (err, result) {
+        if (err) throw err;
+        console.log(result.length); 
+          if(result.length>0){
+            var id = parseInt(result[0].idUsuario);
+            req.session.usrID = id;
+            console.log("bienvenido usuario: "+id);
+            res.redirect("/main");
+          }else{res.redirect("/login");}
+        });
+        console.log("login");
+      }else if(fields.chk2){
+        console.log("register");
+        var consulta = "SELECT COUNT(*) as total FROM usuario WHERE email='"+fields.email+"'";
+         con.query(consulta, function (err, result) {
+         if (err) throw err;
+         //Aqui se identifica si el usuario ya estaba registrado, caso contrario -- lo registramos :)
+          if(parseInt(result[0].total) == 0){
+            consulta = "INSERT INTO usuario (`email`, `contrasena`, `usuarioActivo`) VALUES ('"+fields.email+"','"+fields.contrasena+"',"+1+")";
+            console.log(consulta);
+            con.query(consulta, function (err, result) {
+            if (err) throw err;
+            console.log("usuario registrado exitosamente :)");
+              //En caso que el id de usuario no se encuentren en sesion, lo guardamos
+              consulta = "SELECT idUsuario FROM usuario WHERE email = '"+fields.email+"'";
+              con.query(consulta, function (err, result) {
+              if (err) throw err; 
+              var id = result[0].idUsuario;
+              req.session.usrID = id;
+              console.log("bienvenido usuario: "+id);
+              res.redirect("/main");
+              });
+            });
+          }else{console.log("Redirecciono por que el mail esta en uso"); res.redirect("/index.html")};
+        }); 
+      }
+    });
+});
+
+//registro de una impresora
+app.post('/addPrinter', function(req, res) {
+  var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+    var filamento = "";
+    if(fields.PLA){filamento = "PLA"}
+    else if(fields.ABS){filamento = "ABS"}
+    else if(fields.Flexi){filamento = "Flexible"}
+    var consulta = "INSERT INTO impresora (`IDUsuario`, `nombreImpresora`, `tamanoCamaCaliente`, `tipoFilamento`) VALUES ("+req.session.usrID+",'"+fields.printerName+"','"+fields.tamanoImpresora+"','"+filamento+"')";
+    console.log(consulta);
+    con.query(consulta, function (err, result) {
+    if (err) throw err; 
+    res.redirect("/registrarImpresora");
+    });
+  });
+});          
+
 // Subir tu archivo al SV
 app.post('/subirSTL', function(req, res) {
 	var form = new formidable.IncomingForm();
@@ -122,6 +200,8 @@ app.post('/imprimirPieza', function(req, res) {
 
 // Pagina principal de usuarios 
 app.get('/main', function(req, res) {
+  console.log(req.session.usrID);
+  if(req.session.usrID){
     res.render('pages/paginaPrincipal', {
       main:'active',
       pendent: '',
@@ -129,6 +209,9 @@ app.get('/main', function(req, res) {
       registrarImpresora: '',
       sistemaSupervision: ''
     });
+  }else{
+    res.redirect("/index.html");
+  }
 });
 // Trabajo pendiente 
 app.get('/pendent', function(req, res) {

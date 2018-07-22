@@ -16,6 +16,32 @@
 		display:none;
 	}
 </style>
+<script type="text/javascript">
+	function material1(){
+		var chk1 = document.getElementById("MAT1");
+		var chk2 = document.getElementById("MAT2");
+		var chk3 = document.getElementById("MAT3");
+		chk1.checked = true;
+		chk2.checked = false;
+		chk3.checked = false;
+	}
+	function material2(){
+		var chk1 = document.getElementById("MAT1");
+		var chk2 = document.getElementById("MAT2");
+		var chk3 = document.getElementById("MAT3");
+		chk1.checked = false;
+		chk2.checked = true;
+		chk3.checked = false;
+	}
+	function material3(){
+		var chk1 = document.getElementById("MAT1");
+		var chk2 = document.getElementById("MAT2");
+		var chk3 = document.getElementById("MAT3");
+		chk1.checked = false;
+		chk2.checked = false;
+		chk3.checked = true;
+	}
+</script>
 </head>
 <body>
 <br><br><br><br>
@@ -31,18 +57,18 @@
 				<h3 class="panel-title">Agregar impresora</h3>
 				</div>
 					<div style="margin:2%;padding: 1%;">
-						<div>
+						<form method="POST" action="/addPrinter">
 							<br>
 							<div><label>Nombre de la impresora:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label> <input type="text" name="printerName"/></div>
-							<div><label>Tamaño de la cama caliente (ej. 20x20x10):&nbsp&nbsp</label><input type="text" name="tamanoImpresora"/></div>
+							<div><label>Tamaño de la cama caliente (ej. 20x20x10):&nbsp&nbsp</label><input type="text" name="tamanoImpresora" value="20x20x16"/></div>
 							<div class="radio">
-								<label>Tipos de material que se pueden imprimir: &nbsp&nbsp&nbsp&nbsp</label>
-								  <label class="radio-inline"><input type="radio" id="PLA" checked name="chk1">PLA</label>
-								  <label class="radio-inline"><input type="radio" id="ABS" name="chk1">ABS</label>
-								  <label class="radio-inline"><input type="radio" id="Flexible" name="chk1">Flexible</label>
+								<label>Tipos de material mas utilizado en este equipo: &nbsp&nbsp&nbsp&nbsp</label>
+								  <label class="radio-inline" ><input onclick="material1()" type="radio" id="MAT1" checked name="PLA">PLA</label>
+								  <label class="radio-inline" ><input onclick="material2()" type="radio" id="MAT2" name="ABS">ABS</label>
+								  <label class="radio-inline" ><input onclick="material3()" type="radio" id="MAT3" name="Flexi">Flexible</label>
 							</div>
-							<button type="submit" class="btn btn-success">Agregar nuevo filamento</button>
-						</div>
+							<button type="submit" class="btn btn-success">Agregar nueva impresora</button>
+						</form>
 					</div>
 				</div>
 				<div class="panel panel-default" style="margin-left:2%;height: 50%">
