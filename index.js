@@ -115,13 +115,15 @@ app.post('/cotizacionEnLinea', function(req, res) {
     var consulta = "SELECT * FROM costosexternosempresa WHERE idUsuario = "+fields.idEmpresa;
     con.query(consulta, function (err, rows) {
         if (err) throw err; 
+        var iva = 0;
         if(rows.length>0){
           res.render('pages/cotizacionEnLinea',{
             diaLaboralCost : rows[0]. costoDiaDeTrabajo,
             MantenimientoPorImpresion :rows[0].costoMantenimientoPorImpresion,
             costoLocalArriendo: rows[0].costoLocalArriendo,
             costoInternoPorIntentos: rows[0].adicionalReserva,
-            utilidad: rows[0].porcentajeUtilidad
+            utilidad: rows[0].porcentajeUtilidad,
+            IVA: rows[0].IVA
           });
         }else{
           res.render('pages/cotizacionEnLinea',{
@@ -129,7 +131,8 @@ app.post('/cotizacionEnLinea', function(req, res) {
             MantenimientoPorImpresion : costoMantenimientoPorImpresion,
             costoLocalArriendo: costoLocalArriendo,
             costoInternoPorIntentos: costoInternoPorIntentos,
-            utilidad: porcentajeUtilidad
+            utilidad: porcentajeUtilidad,
+            IVA: iva
           });
         }
     });    
@@ -183,6 +186,7 @@ app.get('/costosInternos', function(req, res) {
   var consulta = "SELECT * FROM `costosExternosEmpresa` WHERE idUsuario = "+req.session.usrID;
   con.query(consulta, function (err, rows) {
   if (err) throw err; 
+  var iva = 0;
   if(rows.length>0){
     //Tabla de costos del cliente
     costoDiaDeTrabajo =  rows[0].costoDiaDeTrabajo;
@@ -190,6 +194,7 @@ app.get('/costosInternos', function(req, res) {
     costoLocalArriendo = rows[0].costoLocalArriendo;
     adicionalReserva = rows[0].adicionalReserva;
     porcentajeUtilidad = rows[0].porcentajeUtilidad;
+    var iva = rows[0].IVA; 
   }
   res.render('pages/costos', {
         costoDiaDeTrabajo: costoDiaDeTrabajo,
@@ -197,6 +202,7 @@ app.get('/costosInternos', function(req, res) {
         costoLocalArriendo: costoLocalArriendo,
         adicionalReserva: adicionalReserva,
         porcentajeUtilidad: porcentajeUtilidad,
+        IVA:iva,
         datosEmpresaClass: 'active',
         main:'',
         pendent: '',
@@ -217,13 +223,14 @@ app.post('/actualizarCostosInternos', function(req, res) {
         if (err) throw err; 
         if(rows.length>0){
         //UPDATE
-        consulta = "UPDATE costosExternosEmpresa SET costoDiaDeTrabajo=@costoDiaDeTrabajo,costoMantenimientoPorImpresion=@costoMantenimientoPorImpresion,costoLocalArriendo=@costoLocalArriendo,adicionalReserva=@adicionalReserva,porcentajeUtilidad=@porcentajeUtilidad WHERE idUsuario=@idUsuario";
+        consulta = "UPDATE costosExternosEmpresa SET IVA=@IVA, costoDiaDeTrabajo=@costoDiaDeTrabajo,costoMantenimientoPorImpresion=@costoMantenimientoPorImpresion,costoLocalArriendo=@costoLocalArriendo,adicionalReserva=@adicionalReserva,porcentajeUtilidad=@porcentajeUtilidad WHERE idUsuario=@idUsuario";
         consulta = consulta.replace('@idUsuario',req.session.usrID);
         consulta = consulta.replace('@costoDiaDeTrabajo',fields.costoDiaDeTrabajo);
         consulta = consulta.replace('@costoMantenimientoPorImpresion',fields.costoMantenimientoPorImpresion);
         consulta = consulta.replace('@costoLocalArriendo',fields.costoLocalArriendo);
         consulta = consulta.replace('@adicionalReserva',fields.adicionalReserva);
         consulta = consulta.replace('@porcentajeUtilidad',fields.porcentajeUtilidad);
+        consulta = consulta.replace('@IVA',fields.IVA);
         console.log("UPDATE");
         console.log(consulta);
         con.query(consulta, function (err, rows) {
@@ -233,13 +240,14 @@ app.post('/actualizarCostosInternos', function(req, res) {
         }else{
           //INSERT
           console.log("INSERT");
-          consulta = "INSERT INTO `costosExternosEmpresa` ( `idUsuario`, `costoDiaDeTrabajo`, `costoMantenimientoPorImpresion`, `costoLocalArriendo`, `adicionalReserva`, `porcentajeUtilidad`) VALUES ( @idUsuario, @costoDiaDeTrabajo, @costoMantenimientoPorImpresion, @costoLocalArriendo, @adicionalReserva, @porcentajeUtilidad)";
+          consulta = "INSERT INTO `costosExternosEmpresa` ( `idUsuario`,`IVA`, `costoDiaDeTrabajo`, `costoMantenimientoPorImpresion`, `costoLocalArriendo`, `adicionalReserva`, `porcentajeUtilidad`) VALUES ( @idUsuario, @IVA, @costoDiaDeTrabajo, @costoMantenimientoPorImpresion, @costoLocalArriendo, @adicionalReserva, @porcentajeUtilidad)";
           consulta = consulta.replace('@idUsuario',req.session.usrID);
           consulta = consulta.replace('@costoDiaDeTrabajo',fields.costoDiaDeTrabajo);
           consulta = consulta.replace('@costoMantenimientoPorImpresion',fields.costoMantenimientoPorImpresion);
           consulta = consulta.replace('@costoLocalArriendo',fields.costoLocalArriendo);
           consulta = consulta.replace('@adicionalReserva',fields.adicionalReserva);
           consulta = consulta.replace('@porcentajeUtilidad',fields.porcentajeUtilidad);
+          consulta = consulta.replace('@IVA',fields.IVA);
           console.  log(consulta);
           con.query(consulta, function (err, rows) {
           if (err) throw err; 

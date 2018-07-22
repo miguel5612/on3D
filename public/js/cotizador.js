@@ -394,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             costoLocal = costoLocal.toFixed(2);
 
             var costoTotal =  parseFloat(filaCost) + parseFloat(timeCost) + parseFloat(maintenance) + parseFloat(costoLocal) + parseFloat(costoInternoPorIntentos);
-            costoTotal = costoTotal.toFixed(2);
+            costoTotal = costoTotal + (costoTotal*(porcentajeUtilidad/100)) + (costoTotal*(IVA/100));
 
             document.getElementById("container2").style.display="block";
             document.getElementById("densityValue").value = density;

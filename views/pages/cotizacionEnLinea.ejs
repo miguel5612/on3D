@@ -11,6 +11,8 @@
 		var MantenimientoPorImpresion = parseFloat("<%- MantenimientoPorImpresion %>");
 		var costoLocalArriendo = parseFloat("<%- costoLocalArriendo %>");
 		var costoInternoPorIntentos = parseFloat("<%- costoInternoPorIntentos %>"); //Seguro por fallas de la maquina
+		var IVA = parseFloat("<%- IVA %>");
+		var porcentajeUtilidad = parseFloat("<%- utilidad %>"); 
     </script>
 </head>
 	<body>
@@ -34,8 +36,8 @@
 					<span id="weightLabel"></span>:&nbsp;<input name="peso" id="weightValue"></input>&nbsp;g<br />
 					<span id="volumeLabel"></span>:&nbsp;<input name="volume" id="volumeValue"></input>&nbsp;cm3<br/>
 				</div>
-				<span id="sizeLabel"></span>:&nbsp;<input name="ancho" id="widthValue"></input>&nbsp;x&nbsp;
-				<input id="heightValue" name="alto"></input>&nbsp;x&nbsp;<input name="largo" id="depthValue"></input>&nbsp;cm<br />
+				<span id="sizeLabel"></span>:&nbsp;<input style="width: 6%;" name="ancho" id="widthValue"></input>&nbsp;x&nbsp;
+				<input style="width: 6%;" id="heightValue" name="alto"></input>&nbsp;x&nbsp;<input style="width: 6%;" name="largo" id="depthValue"></input>&nbsp;cm<br />
 				<div class="hideClient">
 					<hr class="separator"/>
 					<span id="costKilogramLabel"></span>:&nbsp;$<input name="costoKilogramo" id="costKilogramValue"></input>&nbsp;<input type="submit" class="buttonChanger" onclick="moreCost(true);" value="+"/>&nbsp;<input type="submit" class="buttonChanger" onclick="moreCost(false);" value="-"/><br />
