@@ -58,6 +58,77 @@ app.get('/index.html', function(req, res) {
     res.render('pages/index');
 });
 
+app.post('/registrarEmpresa', function(req, res) {
+  var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      var consulta = "SELECT * FROM `datosEmpresa` WHERE idUsuario = "+req.session.usrID;
+      con.query(consulta, function (err, rows) {
+        if (err) throw err; 
+        if(rows.length>0){
+        //UPDATE
+        consulta = "UPDATE datosEmpresa SET nombreEmpresa='@nombreEmpresa',nitEmpresa='@nitEmpresa',direccionEmpresa='@direccionEmpresa',telefonoEmpresa='@telefonoEmpresa' WHERE idUsuario=@idUsuario";
+        consulta = consulta.replace('@idUsuario',req.session.usrID);
+        consulta = consulta.replace('@nombreEmpresa',fields.nombreEmpresa);
+        consulta = consulta.replace('@nitEmpresa',fields.NIT);
+        consulta = consulta.replace('@direccionEmpresa',fields.direccion);
+        consulta = consulta.replace('@telefonoEmpresa',fields.telefono);
+        console.log("UPDATE");
+        console.log(consulta);
+        con.query(consulta, function (err, rows) {
+        if (err) throw err; 
+          res.redirect("/datosEmpresa");
+        });
+        }else{
+          //INSERT
+          console.log("INSERT");
+          consulta = "INSERT INTO `datosEmpresa` ( `idUsuario`, `nombreEmpresa`, `nitEmpresa`, `direccionEmpresa`, `telefonoEmpresa`) VALUES ( @idUsuario, '@nombreEmpresa', '@nitEmpresa', '@direccionEmpresa', '@telefonoEmpresa')";
+          consulta = consulta.replace('@idUsuario',req.session.usrID);
+          consulta = consulta.replace('@nombreEmpresa',fields.nombreEmpresa);
+          consulta = consulta.replace('@nitEmpresa',fields.NIT);
+          consulta = consulta.replace('@direccionEmpresa',fields.direccion);
+          consulta = consulta.replace('@telefonoEmpresa',fields.telefono);
+          console.  log(consulta);
+          con.query(consulta, function (err, rows) {
+          if (err) throw err; 
+            res.redirect("/datosEmpresa");
+          }); 
+        }
+      }); 
+    });
+});
+
+
+//Formulario para agregar los datos de la empresa 
+app.get('/datosEmpresa', function(req, res) {
+  var consulta = "SELECT * FROM `datosEmpresa` WHERE idUsuario = "+req.session.usrID;
+  con.query(consulta, function (err, rows) {
+  if (err) throw err; 
+  var nombreEmpresa = "";
+  var NIT = "";
+  var direccion = "";
+  var telefono = "";
+  console.log(rows.length);
+  if(rows.length>0){
+    nombreEmpresa = rows[0].nombreEmpresa;
+    direccion = rows[0].direccionEmpresa;
+    NIT = rows[0].nitEmpresa;
+    telefono =  rows[0].telefonoEmpresa;
+  }
+    res.render('pages/datoEmpresa', {
+        datosEmpresaClass: 'active',
+        main:'',
+        pendent: '',
+        registrarUsoImpresora: '',
+        registrarImpresora: '',
+        sistemaSupervision: '',
+        nombreEmpresa: nombreEmpresa,
+        NIT:NIT,
+        direccion:direccion,
+        telefono:telefono
+      });
+    });
+});
+
 // Login 
 app.get('/login', function(req, res) {
   if(req.session.usrID){
@@ -208,9 +279,10 @@ app.get('/main', function(req, res) {
   console.log(req.session.usrID);
   if(req.session.usrID){
     res.render('pages/paginaPrincipal', {
+      datosEmpresaClass: '',
       main:'active',
       pendent: '',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: '',
       sistemaSupervision: ''
     });
@@ -221,9 +293,10 @@ app.get('/main', function(req, res) {
 // Trabajo pendiente 
 app.get('/pendent', function(req, res) {
     res.render('pages/trabajoPendiente', {
+      datosEmpresaClass: '',
       main:'',
       pendent: 'active',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: '',
       sistemaSupervision: ''
     });
@@ -231,9 +304,10 @@ app.get('/pendent', function(req, res) {
 // registrar filamento 
 app.get('/registrarFilamento', function(req, res) {
     res.render('pages/registrarFilamento', {
+      datosEmpresaClass: '',
       main:'',
       pendent: '',
-      registrarFilamento: 'active',
+      registrarUsoImpresora: 'active',
       registrarImpresora: '',
       sistemaSupervision: ''
     });
@@ -261,9 +335,10 @@ app.get('/registrarImpresora', function(req, res) {
         divFinal +=divTemp;
       });
       res.render('pages/registrarImpresora', {
+          datosEmpresaClass: '',
           main:'',
           pendent: '',
-          registrarFilamento: '',
+          registrarUsoImpresora: '',
           registrarImpresora: 'active',
           sistemaSupervision: '',
           impresoras: divFinal
@@ -276,9 +351,10 @@ app.get('/registrarImpresora', function(req, res) {
 // sistema de supervision 
 app.get('/sistemaSupervision', function(req, res) {
     res.render('pages/sistemaSupervision', {
+      datosEmpresaClass: '',
       main:'',
       pendent: '',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: '',
       sistemaSupervision: 'active'
     });
@@ -288,9 +364,10 @@ app.get('/sistemaSupervision', function(req, res) {
 // Visor del sistema de supervision  (general)
 app.get('/generalStatus', function(req, res) {
     res.render('pages/generalStatus' ,{
+      datosEmpresaClass: '',
       main:'',
       pendent: '',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: '',
       sistemaSupervision: 'active'
     });
@@ -300,9 +377,10 @@ app.get('/generalStatus', function(req, res) {
 // Visor de una temperatura especifica 
 app.get('/mostrarTemperatura', function(req, res) {
     res.render('pages/mostrarTemperatura',{
+      datosEmpresaClass: '',
       main:'',
       pendent: '',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: '',
       sistemaSupervision: 'active'
     });
@@ -312,9 +390,10 @@ app.get('/mostrarTemperatura', function(req, res) {
 // Visor de archivos 
 app.get('/reporteImpresion', function(req, res) {
     res.render('pages/reportarIntento',{
+      datosEmpresaClass: '',
       main:'',
       pendent: 'active',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: '',
       sistemaSupervision: ''
     });
@@ -323,9 +402,10 @@ app.get('/reporteImpresion', function(req, res) {
 // Agregar filamento a impresora 
 app.get('/configurarFilamento', function(req, res) {
     res.render('pages/registrarFilamento',{
+      datosEmpresaClass: '',
       main:'',
       pendent: '',
-      registrarFilamento: '',
+      registrarUsoImpresora: '',
       registrarImpresora: 'active',
       sistemaSupervision: ''
     });
@@ -355,9 +435,10 @@ app.post('/registrarFilamento', function(req, res) {
         });        
           //console.log(divFilaFinal);
           res.render('pages/registrarFilamento',{
+            datosEmpresaClass: '',
             main:'',
             pendent: '',
-            registrarFilamento: '',
+            registrarUsoImpresora: '',
             registrarImpresora: 'active',
             sistemaSupervision: '',
             idImpresora: idPrinter,
@@ -403,10 +484,11 @@ app.post('/agregarFilamento', function(req, res) {
       });
       console.log(divFilaFinal);
       res.render('pages/registrarFilamento',{
+        datosEmpresaClass: '',
         main:'',
         pendent: '',
-        registrarFilamento: 'active',
-        registrarImpresora: '',
+        registrarUsoImpresora: '',
+        registrarImpresora: 'active',
         sistemaSupervision: '',
         idImpresora: fields.idImpresora,
         filamentos: divFilaFinal

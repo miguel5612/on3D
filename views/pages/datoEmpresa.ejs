@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="../css/bootsMain.css">
+	<link rel="stylesheet" type="text/css" href="../css/paginaPrincipal.css">
+	<title>Imprimir cotizacion</title>
+	<head>
+    	<% include ../partials/head %>
+	</head>
+	<header>
+	    <% include ../partials/header %>
+	</header>
+	<script type="text/javascript" src="../js/paginaPrincipal.js"></script>
+	<style type="text/css">
+		.clientHide{
+			display:none;
+		}
+	</style>
+</head>
+<body>
+	<br><br><br><br>
+	<section id="main">
+	  <div class="container">
+	    <div class="row">
+	      <div class="col-md-3">
+	        <% include ../partials/menuAdmin %>
+	      </div>
+	      <div class="col-md-9">
+	      	<form method="POST" action="/registrarEmpresa" class="form">
+	          <div class="panel panel-default">
+			  <div class="panel-heading" style="background-color:  #095f59;">
+			    <h3 class="panel-title">Datos de la empresa</h3>
+			  </div>
+			  <div class="form-group">
+			  	<label>Nombre de la empresa</label><input value="<%- nombreEmpresa %>" type="Text" class="form-control" name="nombreEmpresa">
+			  </div>
+
+			  <div class="form-group">
+			  	<label>NIT de la empresa</label><input type="Text" value="<%- NIT %>" class="form-control" name="NIT">
+			  </div>
+
+			  <div class="form-group">
+			  	<label>Direccion de la empresa</label><input type="Text" value="<%- direccion %>" class="form-control" name="direccion">
+			  </div>
+
+			  <div class="form-group">
+			  	<label>Telefono de la empresa</label><input type="Text" value="<%- telefono %>" class="form-control" name="telefono">
+			  </div>
+
+			  <div class="form-group">
+			  	<button type="submit" class="btn btn-success">Actualizar datos de la empresa</button>
+			  </div>
+	      </div>
+	      </form>
+	    </div>
+	  </div>
+	</section>
+
+<footer>
+    <% include ../partials/footer %>
+</footer>
+</body>
+</html>
+</html>
