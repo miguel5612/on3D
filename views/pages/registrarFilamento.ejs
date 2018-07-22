@@ -33,6 +33,7 @@
 				</div>
 					<div style="margin:2%;padding: 1%;">
 						<form method="POST" onsubmit="return validarFilamento()" action="/agregarFilamento">
+							<input type="Text" name="idImpresora" value="<%- idImpresora %>">
 							<div><label>Nombre del filamento:&nbsp</label><input type="Text" placeholder="Ej. Filamento1" name="filaNombre"></div>
 							<div><label>Color:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label><input class="jscolor" name="color" value="ab2567"/></div>
 							<div class="radio">

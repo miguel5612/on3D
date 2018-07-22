@@ -240,14 +240,37 @@ app.get('/registrarFilamento', function(req, res) {
 });
 
 // registrar impresora 
+var impresoraDiv = "<form method='POST' action='/registrarFilamento'><input type='Text' name='idImpresora' value='@id' style='display:none'><div class='col-md-3'><div class='well dash-box'><h2><img src='/icons/printer.ico' style='width: 80px;height: 80px;'/><div></div><span class=''></span>&nbsp&nbsp @Nombre</h2><h4>@Version</h4></div></div></form>";
+var divFinal = ""; //En este div quedan las etiquetas finales
+var divTemp = ""; //En este div se cargan los datos temporalmente
 app.get('/registrarImpresora', function(req, res) {
-    res.render('pages/registrarImpresora', {
-      main:'',
-      pendent: '',
-      registrarFilamento: '',
-      registrarImpresora: 'active',
-      sistemaSupervision: ''
-    });
+    if(req.session.usrID){
+      var idUsuario =  req.session.usrID;
+      var consulta = "SELECT * FROM `impresora` INNER JOIN usuario ON impresora.IDUsuario=usuario.idUsuario WHERE impresora.IDUsuario = "+idUsuario;
+      console.log(consulta);
+      con.query(consulta, function (err, rows) {
+      if (err) throw err;
+      var divFinal = ""; //En este div quedan las etiquetas finales
+      var divTemp = ""; //En este div se cargan los datos temporalmente
+      rows.forEach(function(row) {
+        divTemp = impresoraDiv;
+        divTemp = divTemp.replace('@id',row.idImpresora);
+        divTemp = divTemp.replace('@Nombre',row.nombreImpresora);
+        divTemp = divTemp.replace('@Version',row.tamanoCamaCaliente);
+        divFinal +=divTemp;
+      });
+      res.render('pages/registrarImpresora', {
+          main:'',
+          pendent: '',
+          registrarFilamento: '',
+          registrarImpresora: 'active',
+          sistemaSupervision: '',
+          impresoras: divFinal
+        });
+      });
+    }else{
+      res.redirect("/index.html");
+    }
 });
 // sistema de supervision 
 app.get('/sistemaSupervision', function(req, res) {
@@ -298,7 +321,7 @@ app.get('/reporteImpresion', function(req, res) {
 
 // Agregar filamento a impresora 
 app.get('/configurarFilamento', function(req, res) {
-    res.render('pages/configurarFilamento',{
+    res.render('pages/registrarFilamento',{
       main:'',
       pendent: '',
       registrarFilamento: '',
