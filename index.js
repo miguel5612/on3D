@@ -240,7 +240,7 @@ app.get('/registrarFilamento', function(req, res) {
 });
 
 // registrar impresora 
-var impresoraDiv = "<form method='POST' action='/registrarFilamento'><input type='Text' name='idImpresora' value='@id' style='display:none'><div class='col-md-3'><div class='well dash-box'><h2><img src='/icons/printer.ico' style='width: 80px;height: 80px;'/><div></div><span class=''></span>&nbsp&nbsp @Nombre</h2><h4>@Version</h4></div></div></form>";
+var impresoraDiv = "<form onclick='enviar(this.id)' id='printer@id' method='POST' action='/registrarFilamento'><input type='Text' name='idImpresora' value='@id' style='display:none'><div class='col-md-3'><div class='well dash-box'><h2><img src='/icons/printer.ico' style='width: 80px;height: 80px;'/><div></div><span class=''></span>&nbsp&nbsp @Nombre</h2><h4>@Version</h4></div></div></form>";
 var divFinal = ""; //En este div quedan las etiquetas finales
 var divTemp = ""; //En este div se cargan los datos temporalmente
 app.get('/registrarImpresora', function(req, res) {
@@ -254,6 +254,7 @@ app.get('/registrarImpresora', function(req, res) {
       var divTemp = ""; //En este div se cargan los datos temporalmente
       rows.forEach(function(row) {
         divTemp = impresoraDiv;
+        divTemp = divTemp.replace('@id',row.idImpresora);
         divTemp = divTemp.replace('@id',row.idImpresora);
         divTemp = divTemp.replace('@Nombre',row.nombreImpresora);
         divTemp = divTemp.replace('@Version',row.tamanoCamaCaliente);
@@ -329,8 +330,54 @@ app.get('/configurarFilamento', function(req, res) {
       sistemaSupervision: ''
     });
 });
-
-
+// Agregar filamento a impresora 
+app.post('/registrarFilamento', function(req, res) {
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      var idPrinter = fields.idImpresora;
+      res.render('pages/registrarFilamento',{
+        main:'',
+        pendent: '',
+        registrarFilamento: '',
+        registrarImpresora: 'active',
+        sistemaSupervision: '',
+        idImpresora: idPrinter
+      });
+  });
+});
+//Agregar el filamento a la impresora seleccionada
+app.post('/agregarFilamento', function(req, res) {
+  if(req.session.usrID){
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+    var consulta = "INSERT INTO `filamento` (`idImpresora`, `idUsuario`, `nombreFilamento`, `tipoFilamento`, `colorFilamento`, `numeroMetros`, `pesoFilamento`, `diametroFilamento`, `costoFilamento`) VALUES (@idImpresora, @idUsuario, '@nombreFilamento', '@tipoFilamento', '@colorFilamento', @numeroMetros, @pesoFilamento, @diametroFilamento, @costoFilamento)";
+    consulta = consulta.replace('@idImpresora',fields.idImpresora);
+    consulta = consulta.replace('@idUsuario',req.session.usrID);
+    consulta = consulta.replace('@nombreFilamento',fields.filaNombre);
+    consulta = consulta.replace('@tipoFilamento',fields.filaTipo);
+    consulta = consulta.replace('@colorFilamento',fields.color);
+    consulta = consulta.replace('@numeroMetros',fields.metros);
+    consulta = consulta.replace('@pesoFilamento',fields.gramos);
+    consulta = consulta.replace('@diametroFilamento',fields.diametro);
+    consulta = consulta.replace('@costoFilamento',fields.costoFila);    
+    //console.log(consulta);
+    con.query(consulta, function (err, rows) {
+    if (err) throw err;
+    res.render('pages/registrarFilamento',{
+        main:'',
+        pendent: '',
+        registrarFilamento: 'active',
+        registrarImpresora: '',
+        sistemaSupervision: '',
+        idImpresora: fields.idImpresora
+      });
+    });  
+    });
+   }
+   else{
+    res.redirect("/index.html");
+   }
+ });
 
 
 // Intento de impresion 

@@ -15,16 +15,19 @@ function calcularPeso()
 	masa.value = (largo1*(Math.PI*densidad1*(((diametro1/2)/10)^2))).toFixed(2);
 }
 function loadPLA(){
+	var filamento = document.getElementById("filamento");
 	var densidad = document.getElementById("densidadText");
 	var ABS =  document.getElementById("ABS");
 	var PLA =  document.getElementById("PLA");
 	var Flexi =  document.getElementById("Flexible");
 	densidad.value = 1.24;
+	filamento.value="PLA";
 	ABS.checked= false;
 	Flexi.checked = false;
 	refrescarValores();
 }
 function loadABS(){
+	var filamento = document.getElementById("filamento");
 	var densidad = document.getElementById("densidadText");
 	var ABS =  document.getElementById("ABS");
 	var PLA =  document.getElementById("PLA");
@@ -33,13 +36,16 @@ function loadABS(){
 	PLA.checked= false;
 	Flexi.checked = false;
 	refrescarValores();
+	filamento.value="ABS";
 }
 function loadFlexi(){
+	var filamento = document.getElementById("filamento");
 	var densidad = document.getElementById("densidadText");
 	var ABS =  document.getElementById("ABS");
 	var PLA =  document.getElementById("PLA");
 	var Flexi =  document.getElementById("Flexible");
 	densidad.value = 1.21;
+	filamento.value = "Flexi";
 	PLA.checked= false;
 	ABS.checked = false;
 	refrescarValores();
