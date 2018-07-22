@@ -60,7 +60,12 @@ app.get('/index.html', function(req, res) {
 
 // Login 
 app.get('/login', function(req, res) {
+  if(req.session.usrID){
+    //En caso que ya haya iniciado sesion
+    res.redirect("/main");
+   }else{ 
     res.render('pages/login');
+  }
 });
 
 // Cotizar tu impresion 
