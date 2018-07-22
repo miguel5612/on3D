@@ -59,21 +59,31 @@ app.set('view engine', 'ejs');
 
 // use res.render to load up an ejs view file
 
-var option = "<option style='background: rgba(0, 0, 0, 0.3);' value='@value'>@nombre</option>";
+var option = "<option style='background: rgba(0, 0, 0, 0.3);' name='@value'>@nombre</option>";
 var tempDiv = "";
 var divFinal = "";
+
+var input = "<input style='display:none;' name='idEmpresa' value='@id'></input>";
+var tempInput = "";
+var divFinal2 = "";
 // index page 
 app.get('/', function(req, res) {
     var consulta = "SELECT datosempresa.nombreEmpresa, usuario.idUsuario FROM usuario INNER JOIN datosempresa ON usuario.idUsuario = datosempresa.idUsuario";
     con.query(consulta, function (err, rows) {  
       rows.forEach(function(row) {
       tempDiv = option;
-      tempDiv = tempDiv.replace('@value',row.idusuario);
+      tempDiv = tempDiv.replace('@value',row.idUsuario);
       tempDiv = tempDiv.replace('@nombre',row.nombreEmpresa);
       divFinal = tempDiv;
+
+      tempInput = input;
+      tempInput = tempInput.replace('@id',row.idUsuario);
+      divFinal2 = tempInput;
+      
       });
       res.render('pages/index',{
-        empresas: divFinal
+        empresas: divFinal,
+        div2:divFinal2
       });
     });
 });
@@ -82,15 +92,50 @@ app.get('/index.html', function(req, res) {
     con.query(consulta, function (err, rows) {  
       rows.forEach(function(row) {
       tempDiv = option;
-      tempDiv = tempDiv.replace('@value',row.idusuario);
+      tempDiv = tempDiv.replace('@value',row.idUsuario);
       tempDiv = tempDiv.replace('@nombre',row.nombreEmpresa);
       divFinal = tempDiv;
+      
+      tempInput = input;
+      tempInput = tempInput.replace('@id',row.idUsuario);
+      divFinal2 = tempInput;
+      
       });
       res.render('pages/index',{
-        empresas: divFinal
+        empresas: divFinal,
+        div2:divFinal2
       });
     });
 });
+
+app.post('/cotizacionEnLinea', function(req, res) {
+  var form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    console.log(fields);
+    var consulta = "SELECT * FROM costosexternosempresa WHERE idUsuario = "+fields.idEmpresa;
+    con.query(consulta, function (err, rows) {
+        if (err) throw err; 
+        if(rows.length>0){
+          res.render('pages/cotizacionEnLinea',{
+            diaLaboralCost : rows[0]. costoDiaDeTrabajo,
+            MantenimientoPorImpresion :rows[0].costoMantenimientoPorImpresion,
+            costoLocalArriendo: rows[0].costoLocalArriendo,
+            costoInternoPorIntentos: rows[0].adicionalReserva,
+            utilidad: rows[0].porcentajeUtilidad
+          });
+        }else{
+          res.render('pages/cotizacionEnLinea',{
+            diaLaboralCost : costoDiaDeTrabajo,
+            MantenimientoPorImpresion : costoMantenimientoPorImpresion,
+            costoLocalArriendo: costoLocalArriendo,
+            costoInternoPorIntentos: costoInternoPorIntentos,
+            utilidad: porcentajeUtilidad
+          });
+        }
+    });    
+  });
+});
+
 
 app.post('/registrarEmpresa', function(req, res) {
   var form = new formidable.IncomingForm();

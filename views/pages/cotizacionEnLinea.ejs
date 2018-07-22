@@ -5,6 +5,13 @@
 <head>
     <% include ../partials/head %>
     <link rel="stylesheet" type="text/css" href="../css/3DObjectViewer.css">
+    <script type="text/javascript">
+    	var filament_cost = parseFloat("35000");
+		var diaLaboralCost = parseFloat("<%- diaLaboralCost %>");
+		var MantenimientoPorImpresion = parseFloat("<%- MantenimientoPorImpresion %>");
+		var costoLocalArriendo = parseFloat("<%- costoLocalArriendo %>");
+		var costoInternoPorIntentos = parseFloat("<%- costoInternoPorIntentos %>"); //Seguro por fallas de la maquina
+    </script>
 </head>
 	<body>
 		<header>

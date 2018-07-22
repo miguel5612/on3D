@@ -2,13 +2,7 @@ var userLanguage = window.navigator.userLanguage || window.navigator.language;
 var container, camera, scene, renderer, controls, light, vol, mesh, height, heightFinal, width, widthFinal, depth, depthFinal;
 var density = parseFloat("1.05");
 //Costos
-var filament_cost = parseFloat("130000");
 var pesoFilamento = 1 ; //kg de peso del valor de arriba
-var diaLaboralCost = parseFloat("35000");
-var MantenimientoPorImpresion = parseFloat("1000000");
-var costoLocalArriendo = parseFloat("750000");
-var costoInternoPorIntentos = parseFloat("10000"); //Seguro por fallas de la maquina
-
 var filament_diameter = parseFloat("1.75"); // en cm
 var printing_speed = parseFloat("600");
 var hotEndSize = 0.2 ; // en mm
