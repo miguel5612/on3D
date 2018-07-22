@@ -22,6 +22,15 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
+//Costos por defecto
+
+  var costoDiaDeTrabajo = 30000;
+  var costoMantenimientoPorImpresion = 100000;
+  var costoLocalArriendo = 700000;
+  var adicionalReserva = 10000; // 10.000
+  var porcentajeUtilidad = 30; //30%
+
+
 // Server configs
 var port = 8000;
 //Sesiones en nodejs
@@ -91,6 +100,80 @@ app.post('/registrarEmpresa', function(req, res) {
           con.query(consulta, function (err, rows) {
           if (err) throw err; 
             res.redirect("/datosEmpresa");
+          }); 
+        }
+      }); 
+    });
+});
+
+
+//Formulario para agregar los costos internos de la empresa
+
+app.get('/costosInternos', function(req, res) {
+  var consulta = "SELECT * FROM `costosExternosEmpresa` WHERE idUsuario = "+req.session.usrID;
+  con.query(consulta, function (err, rows) {
+  if (err) throw err; 
+  if(rows.length>0){
+    //Tabla de costos del cliente
+    costoDiaDeTrabajo =  rows[0].costoDiaDeTrabajo;
+    costoMantenimientoPorImpresion = rows[0].costoMantenimientoPorImpresion;
+    costoLocalArriendo = rows[0].costoLocalArriendo;
+    adicionalReserva = rows[0].adicionalReserva;
+    porcentajeUtilidad = rows[0].porcentajeUtilidad;
+  }
+  res.render('pages/costos', {
+        costoDiaDeTrabajo: costoDiaDeTrabajo,
+        costoMantenimientoPorImpresion: costoMantenimientoPorImpresion,
+        costoLocalArriendo: costoLocalArriendo,
+        adicionalReserva: adicionalReserva,
+        porcentajeUtilidad: porcentajeUtilidad,
+        datosEmpresaClass: 'active',
+        main:'',
+        pendent: '',
+        registrarUsoImpresora: '',
+        registrarImpresora: '',
+        sistemaSupervision: ''
+      });
+  });
+});
+
+
+//Formulario para actualizar los costos internos
+app.post('/actualizarCostosInternos', function(req, res) {
+  var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      var consulta = "SELECT * FROM `costosExternosEmpresa` WHERE idUsuario = "+req.session.usrID;
+      con.query(consulta, function (err, rows) {
+        if (err) throw err; 
+        if(rows.length>0){
+        //UPDATE
+        consulta = "UPDATE costosExternosEmpresa SET costoDiaDeTrabajo=@costoDiaDeTrabajo,costoMantenimientoPorImpresion=@costoMantenimientoPorImpresion,costoLocalArriendo=@costoLocalArriendo,adicionalReserva=@adicionalReserva,porcentajeUtilidad=@porcentajeUtilidad WHERE idUsuario=@idUsuario";
+        consulta = consulta.replace('@idUsuario',req.session.usrID);
+        consulta = consulta.replace('@costoDiaDeTrabajo',fields.costoDiaDeTrabajo);
+        consulta = consulta.replace('@costoMantenimientoPorImpresion',fields.costoMantenimientoPorImpresion);
+        consulta = consulta.replace('@costoLocalArriendo',fields.costoLocalArriendo);
+        consulta = consulta.replace('@adicionalReserva',fields.adicionalReserva);
+        consulta = consulta.replace('@porcentajeUtilidad',fields.porcentajeUtilidad);
+        console.log("UPDATE");
+        console.log(consulta);
+        con.query(consulta, function (err, rows) {
+        if (err) throw err; 
+          res.redirect("/costosInternos");
+        });
+        }else{
+          //INSERT
+          console.log("INSERT");
+          consulta = "INSERT INTO `costosExternosEmpresa` ( `idUsuario`, `costoDiaDeTrabajo`, `costoMantenimientoPorImpresion`, `costoLocalArriendo`, `adicionalReserva`, `porcentajeUtilidad`) VALUES ( @idUsuario, @costoDiaDeTrabajo, @costoMantenimientoPorImpresion, @costoLocalArriendo, @adicionalReserva, @porcentajeUtilidad)";
+          consulta = consulta.replace('@idUsuario',req.session.usrID);
+          consulta = consulta.replace('@costoDiaDeTrabajo',fields.costoDiaDeTrabajo);
+          consulta = consulta.replace('@costoMantenimientoPorImpresion',fields.costoMantenimientoPorImpresion);
+          consulta = consulta.replace('@costoLocalArriendo',fields.costoLocalArriendo);
+          consulta = consulta.replace('@adicionalReserva',fields.adicionalReserva);
+          consulta = consulta.replace('@porcentajeUtilidad',fields.porcentajeUtilidad);
+          console.  log(consulta);
+          con.query(consulta, function (err, rows) {
+          if (err) throw err; 
+            res.redirect("/costosInternos");
           }); 
         }
       }); 

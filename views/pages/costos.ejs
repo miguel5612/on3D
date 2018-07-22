@@ -26,30 +26,33 @@
 	        <% include ../partials/menuAdmin %>
 	      </div>
 	      <div class="col-md-9">
-	      	<form method="POST" action="/registrarEmpresa" class="form">
+	      	<form method="POST" action="/actualizarCostosInternos" class="form">
 	          <div class="panel panel-default">
 			  <div class="panel-heading" style="background-color:  #095f59;">
 			    <h3 class="panel-title">Datos de la empresa</h3>
 			  </div>
 			  <div class="form-group">
-			  	<label>Nombre de la empresa</label><input value="<%- nombreEmpresa %>" type="Text" class="form-control" name="nombreEmpresa">
+			  	<label>Costo del dia de trabajo</label><input value="<%- costoDiaDeTrabajo %>" type="Text" class="form-control" name="costoDiaDeTrabajo">
 			  </div>
 
 			  <div class="form-group">
-			  	<label>NIT de la empresa</label><input type="Text" value="<%- NIT %>" class="form-control" name="NIT">
+			  	<label>Costo interno general de las impresoras</label><input type="Text" value="<%- costoMantenimientoPorImpresion %>" class="form-control" name="costoMantenimientoPorImpresion">
 			  </div>
 
 			  <div class="form-group">
-			  	<label>Direccion de la empresa</label><input type="Text" value="<%- direccion %>" class="form-control" name="direccion">
+			  	<label>Costo por el local (Arriendo + servicios)</label><input type="Text" value="<%- costoLocalArriendo %>" class="form-control" name="costoLocalArriendo">
 			  </div>
 
 			  <div class="form-group">
-			  	<label>Telefono de la empresa</label><input type="Text" value="<%- telefono %>" class="form-control" name="telefono">
+			  	<label>Comodin en caso de fallo al imprimir</label><input type="Text" value="<%- adicionalReserva %>" class="form-control" name="adicionalReserva">
+			  </div>
+
+			  <div class="form-group">
+			  	<label>Porcentaje de utilidad</label><input type="Text" value="<%- porcentajeUtilidad %>" class="form-control" name="porcentajeUtilidad">
 			  </div>
 
 			  <div class="form-group">
 			  	<button type="submit" class="btn btn-success">Actualizar datos de la empresa</button>
-	     	    <a href="/costosInternos" class="btn btn-success">modificar tabla de costos de la empresa</a>
 			  </div>
 	      </div>
 	      </form>
