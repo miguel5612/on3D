@@ -124,17 +124,70 @@ app.get('/index.html', function(req, res) {
       });
     });
 });
+var cssPaletaColor = "select.listMaterial option.option@id{background-color: #@color;}\r\n";
+var cssPaletaTemp = "";
+var cssPaletaFinal = "";
+
+var optionFila = "<option class='option@id' value='@idFilamento'>@nombreFIlamento</option>\r\n";
+var optionTemp = "";
+var optionFInal = "";
+
+var colorScript = "<script type='text/javascript'>var color@id = '#@color'</script>\r\n";
+var colorTemp = "";
+var colorFinal = "";
+
 app.post('/cotizacionEnLinea', function(req, res) {
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     console.log(fields);
-    var consulta = "SELECT * FROM costosexternosempresa INNER JOIN costocotizacion ON costocotizacion.idUsuario=costosexternosempresa.idUsuario WHERE costocotizacion.idUsuario = "+fields.idEmpresa;
+    var consulta = "SELECT * FROM costosexternosempresa INNER JOIN datosEmpresa ON datosEmpresa.idUsuario=costosexternosempresa.idUsuario WHERE datosEmpresa.idUsuario = "+fields.idEmpresa;
     console.log(consulta);
     con.query(consulta, function (err, rows) {
         if (err) throw err; 
-        var iva = 0;
-        if(rows.length>0){
-          res.render('pages/cotizacionEnLinea',{
+        consulta = "SELECT idFilamento,nombreFilamento,tipoFilamento,colorFilamento,costoFilamento,numeroMetros FROM `filamento` WHERE idUsuario ="+fields.idEmpresa;
+        console.log(consulta);  
+        con.query(consulta, function (err, rows2) {
+          if (err) throw err; 
+          optionFinal = "";
+          cssPaletaFinal = "";
+          colorTemp = "";
+          rows2.forEach(function(row3) {
+              var nombre = row3.nombreFilamento;
+              console.log(nombre);
+              nombre+= ' ';
+              nombre += row3.tipoFilamento;
+              console.log(nombre);
+
+              cssPaletaTemp = cssPaletaColor;
+              cssPaletaTemp = cssPaletaTemp.replace('@id',row3.idFilamento);
+              cssPaletaTemp = cssPaletaTemp.replace('@color',row3.colorFilamento);
+              cssPaletaFinal += cssPaletaTemp;
+
+              console.log(row3);
+              var costoCarrete = parseFloat(row3.costoFilamento);
+              console.log(costoCarrete);
+              var numeroMetros = parseFloat(row3.numeroMetros);
+              console.log(numeroMetros);
+              var costoFIlamento = costoCarrete/numeroMetros;
+
+              optionTemp = optionFila;
+              optionTemp = optionTemp.replace('@idFilamento',costoFIlamento);
+              optionTemp = optionTemp.replace('@color',row3.colorFilamento);
+              optionTemp = optionTemp.replace('@nombreFIlamento',nombre);
+              optionTemp = optionTemp.replace('@id',row3.idFilamento);
+              optionFinal += optionTemp;
+
+              colorTemp = colorScript;
+              colorTemp = colorTemp.replace('@id',row3.idFilamento);
+              colorTemp = colorTemp.replace('@color',row3.colorFilamento);
+              colorFinal += colorTemp;
+               
+          });
+          console.log(optionFInal);
+          console.log(cssPaletaFinal);
+          var iva = 0;
+          if(rows.length>0){
+            res.render('pages/cotizacionEnLinea',{
             diaLaboralCost : rows[0]. costoDiaDeTrabajo,
             MantenimientoPorImpresion :rows[0].costoMantenimientoPorImpresion,
             costoLocalArriendo: rows[0].costoLocalArriendo,
@@ -142,10 +195,13 @@ app.post('/cotizacionEnLinea', function(req, res) {
             utilidad: rows[0].porcentajeUtilidad,
             IVA: rows[0].IVA,
             idEmpresa:fields.idEmpresa,
-            costoMetroFilamento: rows[0].costoMetro,
-            tiempoReserva: rows[0].horasReservaImpresion
-          });
-        }else{
+            costoMetroFilamento: (parseFloat(rows2[0].costoFilamento)/parseFloat(rows2[0].numeroMetros)),
+            tiempoReserva: rows[0].horasReservaEntreTrabajos,
+            css: cssPaletaFinal,
+            option: optionFinal,
+            script:colorFinal
+            });
+          }else{
           res.render('pages/cotizacionEnLinea',{
             diaLaboralCost : costoDiaDeTrabajo,
             MantenimientoPorImpresion : costoMantenimientoPorImpresion,
@@ -154,10 +210,14 @@ app.post('/cotizacionEnLinea', function(req, res) {
             utilidad: porcentajeUtilidad,
             IVA: iva, 
             idEmpresa: fields.idEmpresa,
-            costoMetroFilamento: costoFilamento,
-            tiempoReserva: tiempoReserva
+            costoMetroFilamento: '500',
+            tiempoReserva: tiempoReserva,
+            css: cssPaletaFinal,
+            option: optionFinal,
+            script:colorFinal
           });
         }
+      });
     });    
   });
 });
@@ -171,12 +231,14 @@ app.post('/registrarEmpresa', function(req, res) {
         if (err) throw err; 
         if(rows.length>0){
         //UPDATE
-        consulta = "UPDATE datosEmpresa SET nombreEmpresa='@nombreEmpresa',nitEmpresa='@nitEmpresa',direccionEmpresa='@direccionEmpresa',telefonoEmpresa='@telefonoEmpresa' WHERE idUsuario=@idUsuario";
+        consulta = "UPDATE datosEmpresa SET horasReservaEntreTrabajos = @horasReservaEntreTrabajos, nombreEmpresa='@nombreEmpresa',nitEmpresa='@nitEmpresa',direccionEmpresa='@direccionEmpresa',telefonoEmpresa='@telefonoEmpresa' WHERE idUsuario=@idUsuario";
         consulta = consulta.replace('@idUsuario',req.session.usrID);
         consulta = consulta.replace('@nombreEmpresa',fields.nombreEmpresa);
         consulta = consulta.replace('@nitEmpresa',fields.NIT);
         consulta = consulta.replace('@direccionEmpresa',fields.direccion);
         consulta = consulta.replace('@telefonoEmpresa',fields.telefono);
+        consulta = consulta.replace('@horasReservaEntreTrabajos',fields.tiempoReservaHoras);
+        
         console.log("UPDATE");
         console.log(consulta);
         con.query(consulta, function (err, rows) {
@@ -186,12 +248,14 @@ app.post('/registrarEmpresa', function(req, res) {
         }else{
           //INSERT
           console.log("INSERT");
-          consulta = "INSERT INTO `datosEmpresa` ( `idUsuario`, `nombreEmpresa`, `nitEmpresa`, `direccionEmpresa`, `telefonoEmpresa`) VALUES ( @idUsuario, '@nombreEmpresa', '@nitEmpresa', '@direccionEmpresa', '@telefonoEmpresa')";
+          consulta = "INSERT INTO `datosEmpresa` ( `idUsuario`, `nombreEmpresa`, `nitEmpresa`, `direccionEmpresa`, `telefonoEmpresa`, `horasReservaEntreTrabajos`) VALUES ( @idUsuario, '@nombreEmpresa', '@nitEmpresa', '@direccionEmpresa', '@telefonoEmpresa')";
           consulta = consulta.replace('@idUsuario',req.session.usrID);
           consulta = consulta.replace('@nombreEmpresa',fields.nombreEmpresa);
           consulta = consulta.replace('@nitEmpresa',fields.NIT);
           consulta = consulta.replace('@direccionEmpresa',fields.direccion);
           consulta = consulta.replace('@telefonoEmpresa',fields.telefono);
+          consulta = consulta.replace('@horasReservaEntreTrabajos',fields.tiempoReservaHoras);
+        
           console.  log(consulta);
           con.query(consulta, function (err, rows) {
           if (err) throw err; 
@@ -370,6 +434,7 @@ app.get('/datosEmpresa', function(req, res) {
     direccion = rows[0].direccionEmpresa;
     NIT = rows[0].nitEmpresa;
     telefono =  rows[0].telefonoEmpresa;
+    tiempoReservaHoras =  rows[0].horasReservaEntreTrabajos;
   }
     res.render('pages/datoEmpresa', {
         datosEmpresaClass: 'active',
@@ -381,7 +446,8 @@ app.get('/datosEmpresa', function(req, res) {
         nombreEmpresa: nombreEmpresa,
         NIT:NIT,
         direccion:direccion,
-        telefono:telefono
+        telefono:telefono,
+        tiempoReservaHoras: tiempoReservaHoras
       });
     });
 });
@@ -454,7 +520,7 @@ app.post('/addPrinter', function(req, res) {
     if(fields.PLA){filamento = "PLA"}
     else if(fields.ABS){filamento = "ABS"}
     else if(fields.Flexi){filamento = "Flexible"}
-    var consulta = "INSERT INTO impresora (`IDUsuario`, `nombreImpresora`, `tamanoCamaCaliente`, `tipoFilamento`) VALUES ("+req.session.usrID+",'"+fields.printerName+"','"+fields.tamanoImpresora+"','"+filamento+"')";
+    var consulta = "INSERT INTO impresora (`IDUsuario`, `nombreImpresora`, `tamanoCamaCaliente`, `tipoFilamento`, `diametroBoquilla`) VALUES ("+req.session.usrID+",'"+fields.printerName+"','"+fields.tamanoImpresora+"','"+filamento+"',"+fields.tamanoBoquilla+")";
     console.log(consulta);
     con.query(consulta, function (err, result) {
     if (err) throw err; 

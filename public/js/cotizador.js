@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
             geometry.computeVertexNormals();
             geometry.center();
 
-            var material = new THREE.MeshPhongMaterial({color:0xffffff});
+            var material = new THREE.MeshPhongMaterial({color:colorFondo});
             mesh = new THREE.Mesh(geometry, material);
 
             // CALCULATING THE VOLUME
