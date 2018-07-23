@@ -370,11 +370,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
             if (minutes==0){minutes=1;}
 
-            var filaMeters = (pesoFilamento*1000)/(Math.PI * (((filament_diameter/2)/10)^2)*1.04);
-            console.log(filaMeters);
-            console.log(filament_cost/filaMeters);
-            console.log(filament_length/100);
-            var filaCost = (filament_length/1000) * (filament_cost/filaMeters) ; // Costos por el filamento
+            //var filaMeters = (pesoFilamento*1000)/(Math.PI * (((filament_diameter/2)/10)^2)*1.04);
+            //console.log(filaMeters);
+            //console.log(filament_cost/filaMeters);
+            //console.log(filament_length/100);
+            var filaCost = (filament_length/1000) * filament_cost ; // Costos por el filamento
             filaCost = parseFloat(filaCost).toFixed(2);
 
             var hourCost = diaLaboralCost/12; //12 horas de trabajo
@@ -394,10 +394,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
             costoLocal = costoLocal.toFixed(2);
 
             var costoTotal =  parseFloat(filaCost) + parseFloat(timeCost) + parseFloat(maintenance) + parseFloat(costoLocal) + parseFloat(costoInternoPorIntentos);
-            costoTotal = costoTotal + (costoTotal*(porcentajeUtilidad/100)) + (costoTotal*(IVA/100));
+            costoTotal = costoTotal + (costoTotal*(porcentajeUtilidad/100)) ;
+
+            var iva =  (costoTotal*(IVA/100));
 
             document.getElementById("container2").style.display="block";
+            document.getElementById("costIVA").value = iva;
             document.getElementById("densityValue").value = density;
+            document.getElementById("porIVA").value = IVA;
             document.getElementById("weightValue").value = weightFinal;
             document.getElementById("volumeValue").value = volumeFinal;
             document.getElementById("widthValue").value = widthFinal; 

@@ -14,6 +14,12 @@
 		.clientHide{
 			display:none;
 		}
+		input{
+			background-color:transparent;
+			border:0;
+			margin:0;
+			padding:0;
+		}
 	</style>
 </head>
 <body>
@@ -23,29 +29,29 @@
 	<div class="container datosEmpresa">
 		<form action="/imprimirPieza" method="POST" id="formCotizacion">
 			<br>
-				<input type="text" class="clientHide" name="nombreEmpresa" text="<%- nombreEmpresa %>"/>
-				<input type="text" class="clientHide" name="direccion" text="<%- direccion %>"/>
-				<input type="text" class="clientHide" name="fechaPagoAbono" text="<%- fechaPagoAbono %>"/>
-				<input type="text" class="clientHide" name="emailProveedor" text="<%- emailProveedor %>"/>
-				<input type="text" class="clientHide" name="emailCliente" text="<%- emailCliente %>"/>
-				<input type="text" class="clientHide" name="porcentajeImputestos" text="<%- porcentajeImputestos %>"/>
-				<input type="text" class="clientHide" name="costoImpuesto" text="<%- costoImpuesto %>"/>
-				<input type="text" class="clientHide" name="costoTotal" text="<%- costoTotal %>"/>
-				<input type="text" class="clientHide" name="costoAbono" text="<%- costoAbono %>"/>
-				<input type="text" class="clientHide" name="fechaEntrega" text="<%- fechaEntrega %>"/>
 			<div class="row">
-				<div class="col-sm"><div><strong>Empresa</strong>: <%- nombreEmpresa %></div></div>
-				<div class="col-sm"><div><strong>Direccion</strong>: <%- direccion %></div></div>
-				<div class="col-sm"><div><strong>Pagar el abono</strong>: <%- fechaPagoAbono %> </div></div>
+				<div class="col-sm"><div><strong>Empresa</strong>: <input type="Text" name="nombreEmpresa" value="<%- nombreEmpresa %>" readonly/> </div></div>
+				<div class="col-sm" style=""><div><strong>Direccion</strong>: <input type="Text" name="direccionEmpresa" value="<%- direccion %>" readonly/></div></div>
+				<div class="col-sm"><div><strong>Pagar el abono</strong>:<input type="Text" name="fechaPagoAbono" value="<%- fechaPagoAbono %>" readonly/> </div></div>
 			</div>
 			<div class="row">
-				<div class="col-sm"><div><strong>email del proveedor</strong>: <%- emailProveedor %></div></div>
-				<div class="col-sm"><div><strong>email del cliente</strong>: <%- emailCliente %></div></div>
+				<div class="col-sm"><div><strong>email del proveedor</strong>: <input type="Text" name="emailProveedor" value="<%- emailProveedor %>" readonly/></div></div>
+				<div class="col-sm"><div><strong>email del cliente</strong>: <input type="Text" name="emailCliente" class="form-control" value="<%- emailCliente %>"/></div></div>
 				<div class="col-sm"><strong>Condiciones</strong>: <a href="/<%- linkCondiciones %>"> <%- nombreEmpresa %></a></div>
 			</div>
+			<div class="row">
+				<div class="col-md-6"><strong class="">Dimensiones de la pieza:</strong><input readonly class="col-md-6" type="Text" name="tamano" value="<%- tamano %>"></div>		
+			</div>
+			<div class="row">
+				<div class="col-md-4"><strong class="" style="d">Telefono:</strong><input readonly class="col-md-6" type="Text" name="telefonoEmpresa" value="<%- telefonoEmpresa %>"></div>
+			</div>
+			<div class="row">
+				<div class="col-md-6"><strong class="" style="d">Tiempo requerido para entrega (horas):</strong><input readonly class="col-md-3" type="Text" name="tiempoImpresion" value="<%- tiempoReserva %>"></div>
+			</div>
+			
 			<br>
 			<div class="row">
-				<div class="col-md"><button onclick="solicitarImpresion()" class="btn btn-success">Solicitar impresion!</button></div>
+				<div class="col-md"><button type="submit" onsubmit="return validarSolicitud()" class="btn btn-success">Solicitar impresion!</button></div>
 			</div>
 			<br>
 			<div class="row">
@@ -60,38 +66,39 @@
 					</thead>
 					<tbody>
 						<tr class="table-active">
-							<td><%- servicioImpresion %></td>
+							<td><input type="Text" readonly name="nombreArchivo" value="<%- servicioImpresion %>"></td>
 							<td>1</td>
-							<td>$ <%- costoImpresionUni %></td>
-							<td>$ <%- costoImpresionTotal %></td>
+							<td>$ <input type="Text" name="costoUnitario" value="<%- costoImpresionUni %>"></td>
+							<td>$ <input type="Text" name="costoTotalItem" value="<%- costoImpresionTotal %>"></td>
 						</tr>
 						<tr class="table-info">
 							<td/><td/><td/>
-							<td>Subtotal: $ <%- costoSubtotal %></td>
+							<td>Subtotal: $ <input type="Text" name="subtotal" value="<%- costoSubtotal %>"></td>
 						</tr>
 						<tr class="table-info">
 							<td/><td/><td/>
-							<td>porcentaje de impuestos: <%- porcentajeImputestos %></td>
+							<td>porcentaje de impuestos: <input type="Text" name="porcentajeImpuesto" value=" <%- porcentajeImputestos %>"></td>
 						</tr>
 						<tr class="table-info">
 							<td/><td/><td/>
-							<td>Total de impuestos: $ <%- costoImpuesto %></td>
+							<td>Total de impuestos: $ <input type="Text" name="costoImpuestoTotal" value="<%- costoImpuesto %>"></td>
 						</tr>
 						<tr class="table-success">
 							<td/><td/><td/>
-							<td>Costo total: $ <%- costoTotal %></td>
+							<td>Costo total: $ <input type="Text" name="costoTotalImpresion" value="<%- costoTotal %>"></td>
 						</tr>
 						<tr class="table-success">
 							<td/><td/><td/>
-							<td>Abono inicial: $ <%- costoAbono %></td>
+							<td>Abono inicial: $ <input type="Text" name="abono" value="<%- costoAbono %>"></td>
 						</tr>
 						<tr class="table-success">
 							<td/><td/><td/>
-							<td>Fecha de entrega: <%- fechaEntrega %></td>
+							<td>Fecha de entrega: <input type="Text" name="fechaEntrega" value="<%- fechaEntrega %>"></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
+			<input type="Text" name="idEmpresa" value="<%- idEmpresa %>" style="display:none"/>
 			</form>
 	</div>
 </div>

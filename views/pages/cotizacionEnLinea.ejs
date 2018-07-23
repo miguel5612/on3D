@@ -6,13 +6,14 @@
     <% include ../partials/head %>
     <link rel="stylesheet" type="text/css" href="../css/3DObjectViewer.css">
     <script type="text/javascript">
-    	var filament_cost = parseFloat("35000");
+    	var filament_cost = parseFloat("<%- costoMetroFilamento %>");
 		var diaLaboralCost = parseFloat("<%- diaLaboralCost %>");
 		var MantenimientoPorImpresion = parseFloat("<%- MantenimientoPorImpresion %>");
 		var costoLocalArriendo = parseFloat("<%- costoLocalArriendo %>");
 		var costoInternoPorIntentos = parseFloat("<%- costoInternoPorIntentos %>"); //Seguro por fallas de la maquina
 		var IVA = parseFloat("<%- IVA %>");
 		var porcentajeUtilidad = parseFloat("<%- utilidad %>"); 
+
     </script>
 </head>
 	<body>
@@ -24,6 +25,8 @@
 		<br/><br/><br/>
 		<div class="content">
 			<form class="" action="/subirSTL" id="uplForm" method="post" enctype="multipart/form-data">
+			<input type="Text" name="tiempoReservaHoras" value="<%- tiempoReserva %>"/>
+			<input type="Text" name="idEmpresa" value="<%- idEmpresa %>" class="hideClient">
 			<div id="container"></div>
 			<div id="container2" style="margin-top:5%">
 				<div class="hideClient">
@@ -46,6 +49,8 @@
 					<span id="costMachLabel"></span>:&nbsp;$<input name="costoMaquina" id="costValue3"></input><br />
 					<span id="costLocalLabel"></span>:&nbsp;$<input name="costoLocal" id="costValue4"></input><br />				
 					<span id="costoSeguro"></span>:&nbsp;$<input name="costoSeguro" id="costValue6"></input><br />	
+					<span id="costoIva">impuestos(IVA..)</span>:&nbsp;$<input name="totalIVA" id="costIVA"></input><br />
+					<span id="costoIva">porcentaje de impuestos(IVA..)</span>:&nbsp;$<input name="porIVA" id="porIVA"></input><br />	
 				</div>			
 				<span id="costGeneralLabel"></span>:&nbsp;$<input class="inputPrice" name="costoGeneral" id="costValue5"></input><br />
 				<div class="hideClient">

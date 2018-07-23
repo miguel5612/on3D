@@ -22,6 +22,16 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
+//Configuracion del envio de email
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'onmotica@gmail.com',
+    pass: 'AbCd1234'
+  }
+});
+
 //Costos por defecto
 
   var costoDiaDeTrabajo = 30000;
@@ -30,6 +40,13 @@ con.connect(function(err) {
   var adicionalReserva = 10000; // 10.000
   var porcentajeUtilidad = 30; //30%
 
+  var cantidadMetros = 10;
+  var pesoGramos = 62.83;
+  var costoCarrete = 5000;
+  var costoMetro = 500;
+  var horasReservaImpresion = 48 + 24; // 3 dias
+  var costoFilamento = costoMetro; //costo por metro
+  var tiempoReserva = horasReservaImpresion; //tiempo de reserva
 
 // Server configs
 var port = 8000;
@@ -107,12 +124,12 @@ app.get('/index.html', function(req, res) {
       });
     });
 });
-
 app.post('/cotizacionEnLinea', function(req, res) {
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     console.log(fields);
-    var consulta = "SELECT * FROM costosexternosempresa WHERE idUsuario = "+fields.idEmpresa;
+    var consulta = "SELECT * FROM costosexternosempresa INNER JOIN costocotizacion ON costocotizacion.idUsuario=costosexternosempresa.idUsuario WHERE costocotizacion.idUsuario = "+fields.idEmpresa;
+    console.log(consulta);
     con.query(consulta, function (err, rows) {
         if (err) throw err; 
         var iva = 0;
@@ -123,7 +140,10 @@ app.post('/cotizacionEnLinea', function(req, res) {
             costoLocalArriendo: rows[0].costoLocalArriendo,
             costoInternoPorIntentos: rows[0].adicionalReserva,
             utilidad: rows[0].porcentajeUtilidad,
-            IVA: rows[0].IVA
+            IVA: rows[0].IVA,
+            idEmpresa:fields.idEmpresa,
+            costoMetroFilamento: rows[0].costoMetro,
+            tiempoReserva: rows[0].horasReservaImpresion
           });
         }else{
           res.render('pages/cotizacionEnLinea',{
@@ -132,7 +152,10 @@ app.post('/cotizacionEnLinea', function(req, res) {
             costoLocalArriendo: costoLocalArriendo,
             costoInternoPorIntentos: costoInternoPorIntentos,
             utilidad: porcentajeUtilidad,
-            IVA: iva
+            IVA: iva, 
+            idEmpresa: fields.idEmpresa,
+            costoMetroFilamento: costoFilamento,
+            tiempoReserva: tiempoReserva
           });
         }
     });    
@@ -182,6 +205,80 @@ app.post('/registrarEmpresa', function(req, res) {
 
 //Formulario para agregar los costos internos de la empresa
 
+app.get('/costosExtra', function(req, res) {
+  var consulta = "SELECT * FROM `costoCotizacion` WHERE idUsuario = "+req.session.usrID;
+  con.query(consulta, function (err, rows) {
+  if (err) throw err; 
+  var iva = 0;
+  if(rows.length>0){
+    //Tabla de costos del cliente
+    cantidadMetros =  rows[0].cantidadMetros;
+    pesoGramos = rows[0].pesoGramos;
+    costoCarrete = rows[0].costoCarrete;
+    costoMetro = rows[0].costoMetro;
+    horasReservaImpresion = rows[0].horasReservaImpresion;
+  }
+  res.render('pages/datoExtra', {
+        cantidadMetros: cantidadMetros,
+        pesoGramos: pesoGramos,
+        costoCarrete: costoCarrete,
+        costoMetro: costoMetro,
+        horasReservaImpresion: horasReservaImpresion,
+        idUsuario:req.session.usrID,
+        datosEmpresaClass: 'active',
+        main:'',
+        pendent: '',
+        registrarUsoImpresora: '',
+        registrarImpresora: '',
+        sistemaSupervision: ''
+      });
+  });
+});
+
+app.post('/actualizarExtras', function(req, res) {
+  var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+      console.log(fields);
+      var consulta = "SELECT * FROM `costoCotizacion` WHERE idUsuario = "+req.session.usrID;
+      con.query(consulta, function (err, rows) {
+        var costoMetro = parseFloat(fields.costoFila)/parseFloat(fields.metros);
+        if (err) throw err; 
+        if(rows.length>0){
+        //UPDATE
+        consulta = "UPDATE costoCotizacion SET cantidadMetros=@cantidadMetros, pesoGramos=@pesoGramos,costoCarrete=@costoCarrete,costoMetro=@costoMetro,horasReservaImpresion=@horasReservaImpresion WHERE idUsuario=@idUsuario";
+        consulta = consulta.replace('@cantidadMetros',fields.metros);
+        consulta = consulta.replace('@pesoGramos',fields.gramos);
+        consulta = consulta.replace('@costoCarrete',fields.costoFila);
+        consulta = consulta.replace('@costoMetro',costoMetro);
+        consulta = consulta.replace('@horasReservaImpresion',fields.horasReservaImpresion);
+        consulta = consulta.replace('@idUsuario',req.session.usrID);
+        console.log("UPDATE");
+        console.log(consulta);
+        con.query(consulta, function (err, rows) {
+        if (err) throw err; 
+          res.redirect("/costosExtra");
+        });
+        }else{
+          //INSERT
+          console.log("INSERT");
+          consulta = "INSERT INTO `costoCotizacion` (`idUsuario`, `cantidadMetros`,`pesoGramos`, `costoCarrete`, `costoMetro`, `horasReservaImpresion`) VALUES ( @idUsuario, @cantidadMetros, @pesoGramos, @costoCarrete, @costoMetro, @horasReservaImpresion)";
+          consulta = consulta.replace('@cantidadMetros',fields.metros);
+          consulta = consulta.replace('@pesoGramos',fields.gramos);
+          consulta = consulta.replace('@costoCarrete',fields.costoFila);
+          consulta = consulta.replace('@costoMetro',costoMetro);
+          consulta = consulta.replace('@horasReservaImpresion',fields.horasReservaImpresion);
+          consulta = consulta.replace('@idUsuario',req.session.usrID);
+          console.  log(consulta);
+            con.query(consulta, function (err, rows) {
+          if (err) throw err; 
+            res.redirect("/costosExtra");
+          }); 
+        }
+      }); 
+    });
+});
+
+
 app.get('/costosInternos', function(req, res) {
   var consulta = "SELECT * FROM `costosExternosEmpresa` WHERE idUsuario = "+req.session.usrID;
   con.query(consulta, function (err, rows) {
@@ -212,7 +309,6 @@ app.get('/costosInternos', function(req, res) {
       });
   });
 });
-
 
 //Formulario para actualizar los costos internos
 app.post('/actualizarCostosInternos', function(req, res) {
@@ -378,59 +474,42 @@ app.post('/subirSTL', function(req, res) {
         if (err) throw err;
         var nombreArchivo = files.archivoupload.name;
         console.log(fields);
-        var porcentajeImputestosVar = 0;
-        var costoImpuestoVar = parseInt(porcentajeImputestosVar) * parseInt(fields.costoGeneral);
-        res.render('pages/printCotizacion',{
-          servicioImpresion : "Impresion 3D ("+files.archivoupload.name+")",
-          costoImpresionUni : fields.costoGeneral,
-          costoImpresionTotal : fields.costoGeneral,
-          porcentajeImputestos : porcentajeImputestosVar,
-          costoImpuesto : costoImpuestoVar,
-          costoSubtotal : parseInt(fields.costoGeneral),
-          costoTotal : parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar),
-          costoAbono :  (parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar))/2,
-          nombreEmpresa: "CED 3D",
-          linkCondiciones: "CEDLEGAL",
-          direccion: "calle 22 numero barrio nn",
-          fechaEntrega: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
-          fechaPagoAbono: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
-          emailCliente: "client@customer.com",
-          emailProveedor: "proveedor@hotmail.com"
-        });
+        var porcentajeImputestosVar = fields.porIVA;
+        var costoImpuestoVar = parseFloat(porcentajeImputestosVar/100) * parseInt(fields.costoGeneral);
+        var consulta = "SELECT * FROM `datosempresa`  INNER JOIN usuario ON datosempresa.idUsuario = usuario.idUsuario WHERE usuario.idUsuario= " + fields.idEmpresa;
+        con.query(consulta, function (err, result) {
+        if (err) throw err; 
+          res.render('pages/printCotizacion',{
+            tiempoReserva: fields.tiempoReservaHoras,
+            idEmpresa: fields.idEmpresa,
+            nombreEmpresa: result[0].nombreEmpresa, 
+            telefonoEmpresa: result[0].telefonoEmpresa,
+            direccion: result[0].direccionEmpresa,
+            nitEmpresa:   result[0].nitEmpresa,
+            servicioImpresion : "Impresion 3D ("+files.archivoupload.name+")",
+            costoImpresionUni : fields.costoGeneral,
+            costoImpresionTotal : fields.costoGeneral,
+            porcentajeImputestos : porcentajeImputestosVar,
+            costoImpuesto : costoImpuestoVar,
+            costoSubtotal : parseInt(fields.costoGeneral),
+            costoTotal : parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar),
+            costoAbono :  (parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar))/2,
+            linkCondiciones: "legal",
+            fechaEntrega: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
+            fechaPagoAbono: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
+            emailCliente: "client@customer.com",
+            emailProveedor: result[0].email,
+            tamano: ' ' + fields.largo + ' x ' + fields.alto + ' x ' + fields.ancho + ' (cm)'
+          });
       });
     });
+  });
 });
 // generacion de la orden de impresion
 app.post('/imprimirPieza', function(req, res) {
   var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-      var oldpath = files.archivoupload.path;
-      var newpath = __dirname + "/public/STL/" + files.archivoupload.name;
-      console.log("NEW PATH IS " + newpath);
-      fs.rename(oldpath, newpath, function (err) {
-        if (err) throw err;
-        var nombreArchivo = files.archivoupload.name;
-        console.log(fields);
-        var porcentajeImputestosVar = 0;
-        var costoImpuestoVar = parseInt(porcentajeImputestosVar) * parseInt(fields.costoGeneral);
-        res.render('pages/printCotizacion',{
-          servicioImpresion : "Impresion 3D ("+files.archivoupload.name+")",
-          costoImpresionUni : fields.costoGeneral,
-          costoImpresionTotal : fields.costoGeneral,
-          porcentajeImputestos : porcentajeImputestosVar,
-          costoImpuesto : costoImpuestoVar,
-          costoSubtotal : parseInt(fields.costoGeneral),
-          costoTotal : parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar),
-          costoAbono :  (parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar))/2,
-          nombreEmpresa: "CED 3D",
-          linkCondiciones: "CEDLEGAL",
-          direccion: "calle 22 numero barrio nn",
-          fechaEntrega: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
-          fechaPagoAbono: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
-          emailCliente: "client@customer.com",
-          emailProveedor: "proveedor@hotmail.com"
-        });
-      });
+      console.log(fields);
     });
 });
 
