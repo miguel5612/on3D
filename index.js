@@ -645,7 +645,7 @@ app.post('/imprimirPieza', function(req, res) {
           consulta = "SELECT * FROM `datosempresa` WHERE idUsuario="+ fields.idEmpresa;
           con.query(consulta, function (err, result3) {
           if (err) throw err;
-            generarPropuesta(result3[0].nombreEmpresa,fields.fechaEntrega,fields.fechaPagoAbono,fields.emailCliente,fields.emailProveedor,result3[0].telefonoEmpresa,fields.nombreArchivo,fields.costoTotalImpresion);
+            generarPropuesta(result3[0].nombreEmpresa,fields.fechaEntrega,fields.fechaPagoAbono,fields.emailCliente,fields.emailProveedor,result3[0].telefonoEmpresa,fields.nombreArchivo,fields.costoTotalImpresion,idCotizacion);
             res.redirect('/envioExitoso');
             
           });  
@@ -939,7 +939,7 @@ console.log(port+' is the magic port');
 
 //Generar cotizacion
 
-function generarPropuesta(nombreEmpresa,fechaEntrega,fechaPagoAbono,emailCliente,emailEmpresa,telefonoEmpresa,nombreArchivo,costoServicio)
+function generarPropuesta(nombreEmpresa,fechaEntrega,fechaPagoAbono,emailCliente,emailEmpresa,telefonoEmpresa,nombreArchivo,costoServicio,idCotizacion)
 {
           /*
           var nombreEmpresa = 'CED 3D';
@@ -956,7 +956,7 @@ function generarPropuesta(nombreEmpresa,fechaEntrega,fechaPagoAbono,emailCliente
           var terminosIngles ='This e-mail and its attachments may contain privileged or confidential information and are addressed exclusively to their intended recipients. If you are not the intended recipient, please notify the sender immediately and delete this e-mail and its attachments from your system. The storage, recording, use or disclosure of this e-mail and its attachments by anyone other than the intended recipient is strictly prohibited. This message has been verified using antivirus software; however, the sender is not responsible for any damage to hardware or software resulting from the presence of any virus.';
 
           doc = new PDFDocument();
-          doc.pipe( fs.createWriteStream(__dirname+'/public/cotizacion/cotiza'+1+'.pdf') );
+          doc.pipe( fs.createWriteStream(__dirname+'/public/cotizacion/cotiza'+idCotizacion+'.pdf') );
           //encabezado
           doc.fontSize(8);
           doc.text(dateFormat(new Date(),"yyyy.mm.dd"),
@@ -1089,7 +1089,7 @@ function generarPropuesta(nombreEmpresa,fechaEntrega,fechaPagoAbono,emailCliente
           });
 
           doc.end();
-          enviarEmail(user,emailCliente,nombreEmpresa + ' Cotizacion','Cordial saludo '+emailCliente+'\r\nAdjunto se encuentran los documentos solicitados. Te recordamos los canales de contacto con la empresa '+nombreEmpresa+': \r\n\r\n telefono: '+telefonoEmpresa+'\r\n '+'correo electronico: '+ emailEmpresa +' \r\n\r\n\r\n'+terminos+'\r\n\r\n\r\n'+terminosIngles,'cotizacion.pdf',__dirname+'/public/cotizacion/cotiza'+1+'.pdf');
+          enviarEmail(user,emailCliente,nombreEmpresa + ' Cotizacion','Cordial saludo '+emailCliente+'\r\nAdjunto se encuentran los documentos solicitados. Te recordamos los canales de contacto con la empresa '+nombreEmpresa+': \r\n\r\n telefono: '+telefonoEmpresa+'\r\n '+'correo electronico: '+ emailEmpresa +' \r\n\r\n\r\n'+terminos+'\r\n\r\n\r\n'+terminosIngles,'cotizacion.pdf',__dirname+'/public/cotizacion/cotiza'+idCotizacion+'.pdf');
 
 
 }
