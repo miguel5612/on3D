@@ -656,12 +656,12 @@ app.post('/imprimirPieza', function(req, res) {
 
 
 
-
-app.get('/test', function(req, res) {
-  generarPropuesta();
-  res.end();
-
+app.get('/envioExitoso', function(req, res) {
+  res.render('pages/success.ejs');
 });
+
+
+
 
 
 
