@@ -683,7 +683,7 @@ app.get('/pendent', function(req, res) {
         formTemp = formBasic;
         formTemp = formTemp.replace('@url',row.urlArchivo);
         formTemp = formTemp.replace('@nombreArchivo',row.nombreArchivo);
-        formTemp = formTemp.replace('@fechaEntrega',dateFormat(row.fechaFin,"yyyy.mm.string_decoder.StringDecoder(encoding);"));
+        formTemp = formTemp.replace('@fechaEntrega',dateFormat(row.fechaFin,"yyyy.mm.dd"));
         formFinal +=formTemp;
       })
       res.render('pages/trabajoPendiente', {
