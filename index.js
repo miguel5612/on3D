@@ -8,6 +8,8 @@ var fs = require('fs');
 var dateFormat = require('dateformat');
 //Suma y resta de fechas
 var moment = require('moment-business-time');
+//Creacion de PDF
+PDFDocument = require('pdfkit');
 //Conexion mySQL
 var mysql = require('mysql');
 //SQL Configuration
@@ -38,11 +40,12 @@ con.connect(function(err) {
 });
 
 //Configuracion del envio de email
+var user = 'onmotica@gmail.com';
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'onmotica@gmail.com',
+    user: user,
     pass: 'AbCd1234'
   }
 });
@@ -627,17 +630,9 @@ app.post('/imprimirPieza', function(req, res) {
       con.query(consulta, function (err, result1) {
       if (err) throw err;
         //Obtener el ID de la cotizacion
-        consulta = "SELECT idCotizacion FROM cotizacion WHERE emailProveedor='@emailProveedor' AND emailCliente = '@emailCliente' AND nombreArchivo='@nombreArchivo' AND urlArchivo = '@urlArchivo'";
-        consulta = consulta.replace('@emailCliente',fields.emailCliente);
-        consulta = consulta.replace('@emailProveedor',fields.emailProveedor);
-        consulta = consulta.replace('@idFilamento',fields.idFilamento);
-        consulta = consulta.replace('@nombreArchivo',fields.nombreArchivo);
-        consulta = consulta.replace('@urlArchivo',url);
-        console.log(consulta);
-        con.query(consulta, function (err, result2) {
-        if (err) throw err;
+       
               
-          var idCotizacion = result2[0].idCotizacion;
+          var idCotizacion = result1.insertId;
           //Agendar la impresion
           consulta = "INSERT INTO `agenda` ( `idCotizacion`, `fechaInicio`, `fechaFinal`) VALUES (@idCotizacion, '@fechaInicio', '@fechaFinal')";
           consulta = consulta.replace('@idCotizacion', idCotizacion);
@@ -646,12 +641,28 @@ app.post('/imprimirPieza', function(req, res) {
           console.log(consulta);
           con.query(consulta, function (err, result2) {
           if (err) throw err;
+          
+          consulta = "SELECT * FROM `datosempresa` WHERE idUsuario="+ fields.idEmpresa;
+          con.query(consulta, function (err, result3) {
+          if (err) throw err;
+            generarPropuesta(result3[0].nombreEmpresa,fields.fechaEntrega,fields.fechaPagoAbono,fields.emailCliente,fields.emailProveedor,result3[0].telefonoEmpresa,fields.nombreArchivo,fields.costoTotalImpresion);
             res.redirect('/envioExitoso');
+            
           });  
         });
       });
     });
 });
+
+
+
+
+app.get('/test', function(req, res) {
+  generarPropuesta();
+  res.end();
+
+});
+
 
 
 // Pagina principal de usuarios 
@@ -921,3 +932,186 @@ app.get('/about', function(req, res) {
 
 app.listen(port);
 console.log(port+' is the magic port');
+
+
+
+//Funciones de usuario
+
+//Generar cotizacion
+
+function generarPropuesta(nombreEmpresa,fechaEntrega,fechaPagoAbono,emailCliente,emailEmpresa,telefonoEmpresa,nombreArchivo,costoServicio)
+{
+          /*
+          var nombreEmpresa = 'CED 3D';
+          var fechaEntrega = dateFormat(new Date(), "yyyy.mm.dd");
+          var fechaPagoAbono = dateFormat(new Date(),"yyyy.mm.dd");
+          var emailCliente = 'miguelangelcu@ufps.edu.co';
+          var emailEmpresa = 'empresa@empresa.com';
+          var telefonoEmpresa = 3192597748;
+          var nombreArchivo = '3D.STL';
+          var costoServicio = 500000;
+          */
+          var terminosON3D = 'ON3D es un sistema de gestion en linea que permite generar de manera automatica la cotizacion, calcular metricas y elaborar la agenda de las impresiones asignadas a las empresas aqui registradas, el cliente '+emailCliente+' debe comunicarse atravez de los canales referidos en esta propuesta (email - telefono) y acordar los terminos de pago y el lugar de entrega';
+          var terminos = 'El contenido de este mensaje y de los archivos adjuntos están dirigidos exclusivamente a sus destinatarios y puede contener información privilegiada o confidencial. Si usted no es el destinatario real, por favor informe de ello al remitente y elimine el mensaje de inmediato, de tal manera que no pueda acceder a él de nuevo. Está prohibida su retención, grabación, utilización o divulgación con cualquier propósito. Este mensaje ha sido verificado con software antivirus; sin embargo, el remitente no se hace responsable en caso de que en éste o en los archivos adjuntos haya presencia de algún virus que pueda generar daños en los equipos o programas del destinatario.';
+          var terminosIngles ='This e-mail and its attachments may contain privileged or confidential information and are addressed exclusively to their intended recipients. If you are not the intended recipient, please notify the sender immediately and delete this e-mail and its attachments from your system. The storage, recording, use or disclosure of this e-mail and its attachments by anyone other than the intended recipient is strictly prohibited. This message has been verified using antivirus software; however, the sender is not responsible for any damage to hardware or software resulting from the presence of any virus.';
+
+          doc = new PDFDocument();
+          doc.pipe( fs.createWriteStream(__dirname+'/public/cotizacion/cotiza'+1+'.pdf') );
+          //encabezado
+          doc.fontSize(8);
+          doc.text(dateFormat(new Date(),"yyyy.mm.dd"),
+          {
+            width: 410,
+            align: 'left'
+          });
+
+          doc.text(nombreEmpresa,
+          {
+            width: 410,
+            align: 'right'
+          });
+
+          doc.fontSize(15);
+          doc.text('           ',{
+            width: 200,
+            align: 'center'
+          });
+
+          doc.fontSize(25);
+          doc.text(nombreEmpresa + ' Cotización',{
+            width: 410,
+            align: 'center'
+          });
+
+          doc.fontSize(15);
+          doc.text('           ',{
+            width: 200,
+            align: 'center'
+          });
+          
+          doc.fontSize(12);
+          doc.text('Cordial saludo ' + emailCliente + ':',
+          {
+            width: 410,
+            align: 'justify'
+          });
+
+          doc.text('Atendiendo  su  amable  solicitud  estamos  enviando  cotización  de  los  productos  requeridos,  para  nosotros  es  un  placer  poner    nuestra  compañía  a  su  servicio ' + emailCliente + '.',
+          {
+            width: 410,
+            align: 'justify'
+          });
+
+          doc.fontSize(12);
+          doc.text('           ',{
+            width: 200,
+            align: 'center'
+          });
+          
+          doc.text('Acontinuacion se presentan las caracteristicas del servicio cotizado:  ',
+          {
+            width: 410,
+            align: 'justify'
+          });
+
+          doc.fontSize(12);
+          doc.text('Servicio: impresion 3D (' + nombreArchivo + ').',
+          {
+            width: 410,
+            align: 'justify'
+          });          
+
+          doc.fontSize(12);
+          doc.text('Costo total del servicio de impresion: $' + costoServicio,
+          {
+            width: 410,
+            align: 'left'
+          });
+
+          doc.fontSize(12);
+          doc.text('Correo electronico de la empresa:' + emailEmpresa,
+          {
+            width: 410,
+            align: 'left'
+          });
+
+
+          doc.fontSize(12);
+          doc.text('Telefono de la empresa: ' + telefonoEmpresa,
+          {
+            width: 410,
+            align: 'left'
+          });
+
+          doc.fontSize(12);
+          doc.text('Fecha de entrega de la impresion: ' + fechaEntrega,
+          {
+            width: 410,
+            align: 'left'
+          });
+
+          doc.fontSize(12);
+          doc.text('Fecha de pago del abono inicial: ' + fechaPagoAbono,
+          {
+            width: 410,
+            align: 'left'
+          });
+
+
+          doc.fontSize(12);
+          doc.text('           ',{
+            width: 200,
+            align: 'center'
+          });
+
+          doc.text(terminosON3D,
+          {
+            width: 410,
+            align: 'justify'
+          });
+
+          doc.fontSize(12);
+          doc.text('           ',{
+            width: 200,
+            align: 'center'
+          });
+
+          doc.text(terminos,
+          {
+            width: 410,
+            align: 'justify'
+          });
+
+          doc.text(terminosIngles,
+          {
+            width: 410,
+            align: 'justify'
+          });
+
+          doc.end();
+          enviarEmail(user,emailCliente,nombreEmpresa + ' Cotizacion','Cordial saludo '+emailCliente+'\r\nAdjunto se encuentran los documentos solicitados. Te recordamos los canales de contacto con la empresa '+nombreEmpresa+': \r\n\r\n telefono: '+telefonoEmpresa+'\r\n '+'correo electronico: '+ emailEmpresa +' \r\n\r\n\r\n'+terminos+'\r\n\r\n\r\n'+terminosIngles,'cotizacion.pdf',__dirname+'/public/cotizacion/cotiza'+1+'.pdf');
+
+
+}
+function enviarEmail(remitente,destinatario,subject,text,filename,path){
+ transporter.sendMail({
+  from: remitente,
+  to: destinatario,
+  subject: subject,
+  text: text,
+  attachments: [{
+    filename: filename,
+    path: path,
+    contentType: 'application/pdf'
+    }], function (err, info) {
+     if(err){
+       console.error(err);
+       //res.send(err);
+     }
+     else{
+       console.log(info);
+       //res.send(info);
+     }
+    } 
+  });
+}
