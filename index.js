@@ -63,6 +63,8 @@ var transporter = nodemailer.createTransport({
   var costoFilamento = costoMetro; //costo por metro
   var tiempoReserva = horasReservaImpresion; //tiempo de reserva
   var tiempoPagoAbono = 16; 
+  var diametroBoquilla = 0.4;
+
 
 // Server configs
 var port = 8000;
@@ -160,7 +162,7 @@ app.post('/cotizacionEnLinea', function(req, res) {
     console.log(consulta);
     con.query(consulta, function (err, rows) {
         if (err) throw err; 
-        consulta = "SELECT idFilamento,nombreFilamento,tipoFilamento,colorFilamento,costoFilamento,numeroMetros FROM `filamento` WHERE idUsuario ="+fields.idEmpresa;
+        consulta = "SELECT filamento.idFilamento,filamento.nombreFilamento,filamento.tipoFilamento,filamento.colorFilamento,filamento.costoFilamento,filamento.numeroMetros,impresora.diametroBoquilla,filamento.idImpresora,impresora.idImpresora FROM `filamento` INNER JOIN impresora ON filamento.idImpresora = impresora.idImpresora WHERE impresora.idUsuario ="+fields.idEmpresa;
         console.log(consulta);  
         con.query(consulta, function (err, rows2) {
           if (err) throw err; 
@@ -213,6 +215,7 @@ app.post('/cotizacionEnLinea', function(req, res) {
             idEmpresa:fields.idEmpresa,
             costoMetroFilamento: (parseFloat(rows2[0].costoFilamento)/parseFloat(rows2[0].numeroMetros)),
             tiempoReserva: rows[0].horasReservaEntreTrabajos,
+            diametroBoquilla: rows2[0].diametroBoquilla,
             css: cssPaletaFinal,
             option: optionFinal,
             script:colorFinal
@@ -680,7 +683,7 @@ app.get('/pendent', function(req, res) {
         formTemp = formBasic;
         formTemp = formTemp.replace('@url',row.urlArchivo);
         formTemp = formTemp.replace('@nombreArchivo',row.nombreArchivo);
-        formTemp = formTemp.replace('@fechaEntrega',dateFormat(row.fechaFin,"yyyy.mm.dd"));
+        formTemp = formTemp.replace('@fechaEntrega',dateFormat(row.fechaFin,"yyyy.mm.string_decoder.StringDecoder(encoding);"));
         formFinal +=formTemp;
       })
       res.render('pages/trabajoPendiente', {

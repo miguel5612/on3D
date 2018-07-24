@@ -5,7 +5,7 @@ var density = parseFloat("1.05");
 var pesoFilamento = 1 ; //kg de peso del valor de arriba
 var filament_diameter = parseFloat("1.75"); // en cm
 var printing_speed = parseFloat("600");
-var hotEndSize = 0.2 ; // en mm
+var hotEndSize = diametroBoquilla ; // en mm
 
 document.addEventListener("DOMContentLoaded", function(event) { 
       // THE BROWSER LANGUAGE VARIABLE
