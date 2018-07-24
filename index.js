@@ -591,7 +591,9 @@ app.post('/subirSTL', function(req, res) {
             emailProveedor: result[0].email,
             color: fields.colorFilamento,
             idFilamento: fields.idFilamento,
-            tamano: fields.largo + ' x ' + fields.alto + ' x ' + fields.ancho + ' (cm)'
+            tamano: fields.largo + ' x ' + fields.alto + ' x ' + fields.ancho + ' (cm)',
+            tiempoImpresion:fields.tiempoImpresion,
+            numeroMetros: fields.numeroMetros
           });
       });
     });
@@ -602,6 +604,49 @@ app.post('/imprimirPieza', function(req, res) {
   var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
       console.log(fields);
+      var url = '/STL/'+fields.nombreArchivo;
+      //Crear cotizacion en el sistema
+      var consulta = "INSERT INTO `cotizacion` ( `idUsuario`, `emailProveedor`, `emailCliente`, `idFilamento`, `nombreArchivo`, `urlArchivo`, `numeroMetrosEstimado`, `tiempoImpresionEstimado`, `valorImpuestos`, `valorTotal`, `fechaAbono`, `fechaFin`, `abonoPagado`) VALUES(@idUsuario, '@emailProveedor',  '@emailCliente', @idFilamento, '@nombreArchivo', '@urlArchivo', '@numeroMetrosEstimado', @tiempoImpresionEstimado, @valorImpuestos, @valorTotal, '@fechaAbono', '@fechaFin', @abonoPagado)";
+      consulta = consulta.replace('@idUsuario',fields.idEmpresa);
+      consulta = consulta.replace('@emailProveedor',fields.emailProveedor);
+      consulta = consulta.replace('@emailCliente',fields.emailCliente);
+      consulta = consulta.replace('@idFilamento',fields.idFilamento);
+      consulta = consulta.replace('@nombreArchivo',fields.nombreArchivo);
+      consulta = consulta.replace('@urlArchivo',url);
+      consulta = consulta.replace('@numeroMetrosEstimado',fields.numeroMetros);//FALTA
+      consulta = consulta.replace('@tiempoImpresionEstimado',fields.tiempoImpresion);//FALTA
+      consulta = consulta.replace('@valorImpuestos',fields.costoImpuestoTotal);
+      consulta = consulta.replace('@valorTotal',fields.costoTotalImpresion);
+      consulta = consulta.replace('@fechaAbono',fields.fechaPagoAbono);
+      consulta = consulta.replace('@fechaFin',fields.fechaEntrega);
+      consulta = consulta.replace('@abonoPagado',0); //Aqui el abono aun no se ha pagado
+      console.log(consulta);
+      con.query(consulta, function (err, result1) {
+      if (err) throw err;
+        //Obtener el ID de la cotizacion
+        consulta = "SELECT idCotizacion FROM cotizacion WHERE emailProveedor='@emailProveedor' AND emailCliente = '@emailCliente' AND nombreArchivo='@nombreArchivo' AND urlArchivo = '@urlArchivo'";
+        consulta = consulta.replace('@emailCliente',fields.emailCliente);
+        consulta = consulta.replace('@emailProveedor',fields.emailProveedor);
+        consulta = consulta.replace('@idFilamento',fields.idFilamento);
+        consulta = consulta.replace('@nombreArchivo',fields.nombreArchivo);
+        consulta = consulta.replace('@urlArchivo',url);
+        console.log(consulta);
+        con.query(consulta, function (err, result2) {
+        if (err) throw err;
+              
+          var idCotizacion = result2[0].idCotizacion;
+          //Agendar la impresion
+          consulta = "INSERT INTO `agenda` ( `idCotizacion`, `fechaInicio`, `fechaFinal`) VALUES (@idCotizacion, '@fechaInicio', '@fechaFinal')";
+          consulta = consulta.replace('@idCotizacion', idCotizacion);
+          consulta = consulta.replace('@fechaInicio', fields.fechaPagoAbono);
+          consulta = consulta.replace('@fechaFinal', fields.fechaEntrega);
+          console.log(consulta);
+          con.query(consulta, function (err, result2) {
+          if (err) throw err;
+            res.redirect('/envioExitoso');
+          });  
+        });
+      });
     });
 });
 
@@ -622,15 +667,31 @@ app.get('/main', function(req, res) {
     res.redirect("/index.html");
   }
 });
-// Trabajo pendiente 
+// Trabajo pendiente
+var formBasic = "   <form action='/reporteImpresion' method='POST'><div class='panel-body'><div class='col-md-3'><div class='well dash-box'><h2 onclick='reportarIntento()'><img src='/icons/3dIcon.ico' style='width: 80px;height: 80px;'><span class=' aria-hidden='true'></span> @fechaEntrega </h2><h4><a href='@url'>@nombreArchivo</a></h4></div></div></form>";
+var formTemp = "";
+var formFinal = "";
 app.get('/pendent', function(req, res) {
-    res.render('pages/trabajoPendiente', {
-      datosEmpresaClass: '',
-      main:'',
-      pendent: 'active',
-      registrarUsoImpresora: '',
-      registrarImpresora: '',
-      sistemaSupervision: ''
+    var consulta = "SELECT * FROM `cotizacion` WHERE idUsuario = @idUsuario";
+    consulta = consulta.replace('@idUsuario',req.session.usrID);
+    con.query(consulta, function (err, rows) {
+    if (err) throw err;  
+      rows.forEach(function(row) {
+        formTemp = formBasic;
+        formTemp = formTemp.replace('@url',row.urlArchivo);
+        formTemp = formTemp.replace('@nombreArchivo',row.nombreArchivo);
+        formTemp = formTemp.replace('@fechaEntrega',dateFormat(row.fechaFin,"yyyy.mm.dd"));
+        formFinal +=formTemp;
+      })
+      res.render('pages/trabajoPendiente', {
+        datosEmpresaClass: '',
+        main:'',
+        pendent: 'active',
+        registrarUsoImpresora: '',
+        registrarImpresora: '',
+        sistemaSupervision: '',
+        lista:formFinal
+      });
     });
 });
 // registrar filamento 

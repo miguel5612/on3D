@@ -416,9 +416,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
             document.getElementById("costValue6").value = costoInternoPorIntentos;
             document.getElementById("diameterValue").innerHTML = filament_diameter/10;
             document.getElementById("speedValue").innerHTML = printing_speed/10;
-            document.getElementById("lengthValue").innerHTML = (filament_length/10).toFixed(2);
+            document.getElementById("lengthValue").value = (filament_length/10).toFixed(2);
             document.getElementById("hoursValue").innerHTML = hours;
             document.getElementById("minutesValue").innerHTML = minutes;
+            document.getElementById("timeValue").value = hours+'.'+minutes;
             document.getElementById("btnSubmit").disabled = false;
 
             var distance;

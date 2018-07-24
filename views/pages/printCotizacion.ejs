@@ -32,7 +32,7 @@
 		<form action="/imprimirPieza" method="POST" id="formCotizacion">
 			<br>
 			<div class="row">
-				<div class="col-md-6"><strong class="" style="d">Tiempo requerido para entrega (horas):</strong><input readonly class="col-md-3" type="Text" name="tiempoImpresion" value="<%- tiempoReserva %>"></div>
+				<div class="col-md-6"><strong class="" style="d">Tiempo requerido para entrega (horas):</strong><input readonly class="col-md-3" type="Text" name="tiempoReserva" value="<%- tiempoReserva %>"></div>
 				<div class="col-md-6"><div><strong>Empresa</strong>: <input type="Text" class="col-md-6" name="nombreEmpresa" value="<%- nombreEmpresa %>" readonly/> </div></div>
 			</div>
 			<div class="row">
@@ -100,6 +100,8 @@
 				</table>
 			</div>
 			<input type="Text" name="idEmpresa" value="<%- idEmpresa %>" style="display:none"/>
+			<input type="Text" name="numeroMetros" value="<%- numeroMetros %>" style="display:none"/>
+			<input type="Text" name="tiempoImpresion" value="<%- tiempoImpresion %>" style="display:none"/>
 			</form>
 	</div>
 </div>
