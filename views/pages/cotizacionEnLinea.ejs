@@ -28,12 +28,15 @@
 			//Asignacion del color igual al color seleccionado
 			var e = document.getElementById("selectMaterial");
 			var strUser = e.options[e.selectedIndex];
-			var id = strUser.className.substring(6,10);
+			var id = strUser.className.substring(6,15);
 			var color = this['color' + id];
 			//Aplico el color
 			e.style.backgroundColor = color;
 			colorFondo = color;
-
+			var inputColor = document.getElementById("colorFinal");
+			inputColor.value = color;
+			var inputIdFilamento = document.getElementById("idColorFinal");
+			inputIdFilamento.value = id;
 		}
 
     </script>
@@ -70,6 +73,10 @@
 				<div class="hideClient">
 					<hr class="separator"/>
 					<span id="costKilogramLabel"></span>:&nbsp;$<input name="costoKilogramo" id="costKilogramValue"></input>&nbsp;<input type="submit" class="buttonChanger" onclick="moreCost(true);" value="+"/>&nbsp;<input type="submit" class="buttonChanger" onclick="moreCost(false);" value="-"/><br />
+
+					<span id="colorFila">Color del filamento: </span>:&nbsp;$<input name="colorFilamento" id="colorFinal"></input><br />
+					<span id="colorFila">Llave del filamento: </span>:&nbsp;$<input name="idFilamento" id="idColorFinal"></input><br />
+					
 					<span id="costFilaLabel"></span>:&nbsp;$<input name="costoFilamento" id="costValue1"></input><br />
 					<span id="costTiempoLabel"></span>:&nbsp;$<input name="costoTiempo" id="costValue2"></input><br />
 					<span id="costMachLabel"></span>:&nbsp;$<input name="costoMaquina" id="costValue3"></input><br />

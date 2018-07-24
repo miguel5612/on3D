@@ -6,6 +6,8 @@ var formidable = require('formidable');
 var fs = require('fs');
 //formateo de la fecha
 var dateFormat = require('dateformat');
+//Suma y resta de fechas
+var moment = require('moment-business-time');
 //Conexion mySQL
 var mysql = require('mysql');
 //SQL Configuration
@@ -15,6 +17,19 @@ var con = mysql.createConnection({
   password: "admin",
   port:3306,
   database:"ON3D"
+});
+
+//horas laborales
+moment.locale('en', {
+    workinghours: {
+        0: null,
+        1: ['08:00:00', '18:00:00'],
+        2: ['08:00:00', '18:00:00'],
+        3: ['08:00:00', '18:00:00'],
+        4: ['08:00:00', '18:00:00'],
+        5: ['08:00:00', '18:00:00'],
+        6: ['08:00:00', '18:00:00']
+    }
 });
 
 con.connect(function(err) {
@@ -47,6 +62,7 @@ var transporter = nodemailer.createTransport({
   var horasReservaImpresion = 48 + 24; // 3 dias
   var costoFilamento = costoMetro; //costo por metro
   var tiempoReserva = horasReservaImpresion; //tiempo de reserva
+  var tiempoPagoAbono = 16; 
 
 // Server configs
 var port = 8000;
@@ -544,7 +560,15 @@ app.post('/subirSTL', function(req, res) {
         var costoImpuestoVar = parseFloat(porcentajeImputestosVar/100) * parseInt(fields.costoGeneral);
         var consulta = "SELECT * FROM `datosempresa`  INNER JOIN usuario ON datosempresa.idUsuario = usuario.idUsuario WHERE usuario.idUsuario= " + fields.idEmpresa;
         con.query(consulta, function (err, result) {
-        if (err) throw err; 
+        if (err) throw err;
+        var tiempoReserva = parseInt(fields.tiempoReservaHoras);
+        var fechaEntrega = moment(new Date());
+        var fechaAbono = moment(new Date());
+        fechaAbono.addWorkingTime(tiempoPagoAbono,'hours');
+        fechaEntrega.addWorkingTime(tiempoReserva + tiempoPagoAbono,'hours');
+        console.log('tiempo reserva: ',tiempoReserva);
+        console.log('fecha de entrega: ',fechaEntrega);
+        console.log('fecha Abono: ',fechaAbono);
           res.render('pages/printCotizacion',{
             tiempoReserva: fields.tiempoReservaHoras,
             idEmpresa: fields.idEmpresa,
@@ -561,11 +585,13 @@ app.post('/subirSTL', function(req, res) {
             costoTotal : parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar),
             costoAbono :  (parseInt(fields.costoGeneral) + parseInt(costoImpuestoVar))/2,
             linkCondiciones: "legal",
-            fechaEntrega: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
-            fechaPagoAbono: dateFormat(new Date(),"yyyy.mm.dd hh:mm"),
-            emailCliente: "client@customer.com",
+            fechaEntrega: dateFormat(fechaEntrega,"yyyy.mm.dd hh:mm"),
+            fechaPagoAbono: dateFormat(fechaAbono,"yyyy.mm.dd hh:mm"),
+            emailCliente: "ingrese su email",
             emailProveedor: result[0].email,
-            tamano: ' ' + fields.largo + ' x ' + fields.alto + ' x ' + fields.ancho + ' (cm)'
+            color: fields.colorFilamento,
+            idFilamento: fields.idFilamento,
+            tamano: fields.largo + ' x ' + fields.alto + ' x ' + fields.ancho + ' (cm)'
           });
       });
     });
