@@ -32,6 +32,8 @@
 		<form action="/imprimirPieza" method="POST" id="formCotizacion">
 			<br>
 			<div class="row">
+				<input style="background-color:<%- color %>" type="Text" readonly name="nombreArchivo" value="<%- nombreOriginal %>">
+				<div class="col-md-6"><strong class="clientHide" style="d">nombreArhivo:</strong><input class="clientHide" readonly class="col-md-3" type="Text" name="url" value="<%- urlArchivo %>"></div>
 				<div class="col-md-6"><strong class="" style="d">Tiempo requerido para entrega (horas):</strong><input readonly class="col-md-3" type="Text" name="tiempoReserva" value="<%- tiempoReserva %>"></div>
 				<div class="col-md-6"><div><strong>Empresa</strong>: <input type="Text" class="col-md-6" name="nombreEmpresa" value="<%- nombreEmpresa %>" readonly/> </div></div>
 			</div>
@@ -67,7 +69,7 @@
 					<tbody>
 						<tr class="table-active">
 							<input type="Text" name="idFilamento" id="idFilamento" value="<%- idFilamento %>" style="display:none"/>
-							<td><input style="background-color:<%- color %>" type="Text" readonly name="nombreArchivo" value="<%- servicioImpresion %>"></td>
+							<td><input style="background-color:<%- color %>" type="Text" readonly name="" value="<%- servicioImpresion %>"></td>
 							<td>1</td>
 							<td>$ <input type="Text" name="costoUnitario" value="<%- costoImpresionUni %>"></td>
 							<td>$ <input type="Text" name="costoTotalItem" value="<%- costoImpresionTotal %>"></td>

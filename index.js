@@ -36,7 +36,7 @@ moment.locale('en', {
 
 con.connect(function(err) {
   if (err) throw err;
-  console.log("Connected!");
+  
 });
 
 //Configuracion del envio de email
@@ -160,13 +160,13 @@ var colorFinal = "";
 app.post('/cotizacionEnLinea', function(req, res) {
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
-    console.log(fields);
+    
     var consulta = "SELECT * FROM costosexternosempresa INNER JOIN datosEmpresa ON datosEmpresa.idUsuario=costosexternosempresa.idUsuario WHERE datosEmpresa.idUsuario = "+fields.idEmpresa;
-    console.log(consulta);
+    
     con.query(consulta, function (err, rows) {
         if (err) throw err; 
         consulta = "SELECT filamento.idFilamento,filamento.nombreFilamento,filamento.tipoFilamento,filamento.colorFilamento,filamento.costoFilamento,filamento.numeroMetros,impresora.diametroBoquilla,filamento.idImpresora,impresora.idImpresora FROM `filamento` INNER JOIN impresora ON filamento.idImpresora = impresora.idImpresora WHERE impresora.idUsuario ="+fields.idEmpresa;
-        console.log(consulta);  
+        
         con.query(consulta, function (err, rows2) {
           if (err) throw err; 
           optionFinal = "";
@@ -174,21 +174,21 @@ app.post('/cotizacionEnLinea', function(req, res) {
           colorTemp = "";
           rows2.forEach(function(row3) {
               var nombre = row3.nombreFilamento;
-              console.log(nombre);
+              
               nombre+= ' ';
               nombre += row3.tipoFilamento;
-              console.log(nombre);
+              
 
               cssPaletaTemp = cssPaletaColor;
               cssPaletaTemp = cssPaletaTemp.replace('@id',row3.idFilamento);
               cssPaletaTemp = cssPaletaTemp.replace('@color',row3.colorFilamento);
               cssPaletaFinal += cssPaletaTemp;
 
-              console.log(row3);
+              
               var costoCarrete = parseFloat(row3.costoFilamento);
-              console.log(costoCarrete);
+              
               var numeroMetros = parseFloat(row3.numeroMetros);
-              console.log(numeroMetros);
+              
               var costoFIlamento = costoCarrete/numeroMetros;
 
               optionTemp = optionFila;
@@ -204,8 +204,8 @@ app.post('/cotizacionEnLinea', function(req, res) {
               colorFinal += colorTemp;
                
           });
-          console.log(optionFInal);
-          console.log(cssPaletaFinal);
+          
+          
           var iva = 0;
           if(rows.length>0){
             res.render('pages/cotizacionEnLinea',{
@@ -261,15 +261,15 @@ app.post('/registrarEmpresa', function(req, res) {
         consulta = consulta.replace('@telefonoEmpresa',fields.telefono);
         consulta = consulta.replace('@horasReservaEntreTrabajos',fields.tiempoReservaHoras);
         
-        console.log("UPDATE");
-        console.log(consulta);
+        
+        
         con.query(consulta, function (err, rows) {
         if (err) throw err; 
           res.redirect("/datosEmpresa");
         });
         }else{
           //INSERT
-          console.log("INSERT");
+          
           consulta = "INSERT INTO `datosEmpresa` ( `idUsuario`, `nombreEmpresa`, `nitEmpresa`, `direccionEmpresa`, `telefonoEmpresa`, `horasReservaEntreTrabajos`) VALUES ( @idUsuario, '@nombreEmpresa', '@nitEmpresa', '@direccionEmpresa', '@telefonoEmpresa')";
           consulta = consulta.replace('@idUsuario',req.session.usrID);
           consulta = consulta.replace('@nombreEmpresa',fields.nombreEmpresa);
@@ -324,7 +324,7 @@ app.get('/costosExtra', function(req, res) {
 app.post('/actualizarExtras', function(req, res) {
   var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-      console.log(fields);
+      
       var consulta = "SELECT * FROM `costoCotizacion` WHERE idUsuario = "+req.session.usrID;
       con.query(consulta, function (err, rows) {
         var costoMetro = parseFloat(fields.costoFila)/parseFloat(fields.metros);
@@ -338,15 +338,15 @@ app.post('/actualizarExtras', function(req, res) {
         consulta = consulta.replace('@costoMetro',costoMetro);
         consulta = consulta.replace('@horasReservaImpresion',fields.horasReservaImpresion);
         consulta = consulta.replace('@idUsuario',req.session.usrID);
-        console.log("UPDATE");
-        console.log(consulta);
+        
+        
         con.query(consulta, function (err, rows) {
         if (err) throw err; 
           res.redirect("/costosExtra");
         });
         }else{
           //INSERT
-          console.log("INSERT");
+          
           consulta = "INSERT INTO `costoCotizacion` (`idUsuario`, `cantidadMetros`,`pesoGramos`, `costoCarrete`, `costoMetro`, `horasReservaImpresion`) VALUES ( @idUsuario, @cantidadMetros, @pesoGramos, @costoCarrete, @costoMetro, @horasReservaImpresion)";
           consulta = consulta.replace('@cantidadMetros',fields.metros);
           consulta = consulta.replace('@pesoGramos',fields.gramos);
@@ -413,15 +413,15 @@ app.post('/actualizarCostosInternos', function(req, res) {
         consulta = consulta.replace('@adicionalReserva',fields.adicionalReserva);
         consulta = consulta.replace('@porcentajeUtilidad',fields.porcentajeUtilidad);
         consulta = consulta.replace('@IVA',fields.IVA);
-        console.log("UPDATE");
-        console.log(consulta);
+        
+        
         con.query(consulta, function (err, rows) {
         if (err) throw err; 
           res.redirect("/costosInternos");
         });
         }else{
           //INSERT
-          console.log("INSERT");
+          
           consulta = "INSERT INTO `costosExternosEmpresa` ( `idUsuario`,`IVA`, `costoDiaDeTrabajo`, `costoMantenimientoPorImpresion`, `costoLocalArriendo`, `adicionalReserva`, `porcentajeUtilidad`) VALUES ( @idUsuario, @IVA, @costoDiaDeTrabajo, @costoMantenimientoPorImpresion, @costoLocalArriendo, @adicionalReserva, @porcentajeUtilidad)";
           consulta = consulta.replace('@idUsuario',req.session.usrID);
           consulta = consulta.replace('@costoDiaDeTrabajo',fields.costoDiaDeTrabajo);
@@ -450,7 +450,7 @@ app.get('/datosEmpresa', function(req, res) {
   var NIT = "";
   var direccion = "";
   var telefono = "";
-  console.log(rows.length);
+  
   if(rows.length>0){
     nombreEmpresa = rows[0].nombreEmpresa;
     direccion = rows[0].direccionEmpresa;
@@ -492,43 +492,46 @@ app.get('/cotizacionEnLinea', function(req, res) {
 app.post('/iniciarSesion', function(req, res) {
   var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-      console.log(fields);
+      
       if(fields.chk1){
         consulta = "SELECT idUsuario FROM usuario WHERE email = '"+fields.email+"' AND contrasena='"+fields.contrasena+"'";
         con.query(consulta, function (err, result) {
         if (err) throw err;
-        console.log(result.length); 
+        
           if(result.length>0){
             var id = parseInt(result[0].idUsuario);
             req.session.usrID = id;
-            console.log("bienvenido usuario: "+id);
+            
             res.redirect("/main");
           }else{res.redirect("/login");}
         });
-        console.log("login");
+        
       }else if(fields.chk2){
-        console.log("register");
+        
         var consulta = "SELECT COUNT(*) as total FROM usuario WHERE email='"+fields.email+"'";
          con.query(consulta, function (err, result) {
          if (err) throw err;
          //Aqui se identifica si el usuario ya estaba registrado, caso contrario -- lo registramos :)
           if(parseInt(result[0].total) == 0){
             consulta = "INSERT INTO usuario (`email`, `contrasena`, `usuarioActivo`) VALUES ('"+fields.email+"','"+fields.contrasena+"',"+1+")";
-            console.log(consulta);
+            
             con.query(consulta, function (err, result) {
             if (err) throw err;
-            console.log("usuario registrado exitosamente :)");
+            
               //En caso que el id de usuario no se encuentren en sesion, lo guardamos
               consulta = "SELECT idUsuario FROM usuario WHERE email = '"+fields.email+"'";
               con.query(consulta, function (err, result) {
               if (err) throw err; 
               var id = result[0].idUsuario;
               req.session.usrID = id;
-              console.log("bienvenido usuario: "+id);
+              
               res.redirect("/main");
               });
             });
-          }else{console.log("Redirecciono por que el mail esta en uso"); res.redirect("/index.html")};
+          }else{
+            //Email en uso
+            res.redirect("/index.html")
+          };
         }); 
       }
     });
@@ -543,7 +546,7 @@ app.post('/addPrinter', function(req, res) {
     else if(fields.ABS){filamento = "ABS"}
     else if(fields.Flexi){filamento = "Flexible"}
     var consulta = "INSERT INTO impresora (`IDUsuario`, `nombreImpresora`, `tamanoCamaCaliente`, `tipoFilamento`, `diametroBoquilla`) VALUES ("+req.session.usrID+",'"+fields.printerName+"','"+fields.tamanoImpresora+"','"+filamento+"',"+fields.tamanoBoquilla+")";
-    console.log(consulta);
+    
     con.query(consulta, function (err, result) {
     if (err) throw err; 
     res.redirect("/registrarImpresora");
@@ -556,12 +559,14 @@ app.post('/subirSTL', function(req, res) {
 	var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
       var oldpath = files.archivoupload.path;
-      var newpath = __dirname + "/public/STL/" + files.archivoupload.name;
-      console.log("NEW PATH IS " + newpath);
+      var marcaFecha = dateFormat(new Date(), "yyyymmddhhmm");
+      var url = '/STL/'+marcaFecha+files.archivoupload.name;
+      var newpath = __dirname + "/public/STL/" +marcaFecha+ files.archivoupload.name;
+      
       fs.rename(oldpath, newpath, function (err) {
         if (err) throw err;
-        var nombreArchivo = files.archivoupload.name;
-        console.log(fields);
+        var nombreArchivo = marcaFecha + files.archivoupload.name;
+        
         var porcentajeImputestosVar = fields.porIVA;
         var costoImpuestoVar = parseFloat(porcentajeImputestosVar/100) * parseInt(fields.costoGeneral);
         var consulta = "SELECT * FROM `datosempresa`  INNER JOIN usuario ON datosempresa.idUsuario = usuario.idUsuario WHERE usuario.idUsuario= " + fields.idEmpresa;
@@ -570,18 +575,26 @@ app.post('/subirSTL', function(req, res) {
         var tiempoReserva = parseInt(fields.tiempoReservaHoras);
         var fechaEntrega = moment(new Date());
         var fechaAbono = moment(new Date());
-        fechaAbono.addWorkingTime(tiempoPagoAbono,'hours');
-        fechaEntrega.addWorkingTime(tiempoReserva + tiempoPagoAbono,'hours');
-        console.log('tiempo reserva: ',tiempoReserva);
-        console.log('fecha de entrega: ',fechaEntrega);
-        console.log('fecha Abono: ',fechaAbono);
+
+        var minutos = parseInt(String(fields.tiempoImpresion).split('.')[1]);
+        fechaAbono = fechaAbono.addWorkingTime( tiempoPagoAbono,'hours');
+        fechaEntrega = fechaEntrega.addWorkingTime( tiempoReserva + tiempoPagoAbono + parseInt(fields.tiempoImpresion), 'hours');
+        fechaEntrega = fechaEntrega.addWorkingTime( minutos, 'minutes');//Agregamos los minutos
+        
+        
+        
+        
+        
           res.render('pages/printCotizacion',{
+            nombreArchivo: nombreArchivo,
+            urlArchivo:url,
             tiempoReserva: fields.tiempoReservaHoras,
             idEmpresa: fields.idEmpresa,
             nombreEmpresa: result[0].nombreEmpresa, 
             telefonoEmpresa: result[0].telefonoEmpresa,
             direccion: result[0].direccionEmpresa,
             nitEmpresa:   result[0].nitEmpresa,
+            nombreOriginal:files.archivoupload.name,
             servicioImpresion : "Impresion 3D ("+files.archivoupload.name+")",
             costoImpresionUni : fields.costoGeneral,
             costoImpresionTotal : fields.costoGeneral,
@@ -609,8 +622,8 @@ app.post('/subirSTL', function(req, res) {
 app.post('/imprimirPieza', function(req, res) {
   var form = new formidable.IncomingForm();
     form.parse(req, function (err, fields, files) {
-      console.log(fields);
-      var url = '/STL/'+fields.nombreArchivo;
+      
+      var url = fields.url;
       //Crear cotizacion en el sistema
       var consulta = "INSERT INTO `cotizacion` ( `idUsuario`, `emailProveedor`, `emailCliente`, `idFilamento`, `nombreArchivo`, `urlArchivo`, `numeroMetrosEstimado`, `tiempoImpresionEstimado`, `valorImpuestos`, `valorTotal`, `fechaAbono`, `fechaFin`, `abonoPagado`) VALUES(@idUsuario, '@emailProveedor',  '@emailCliente', @idFilamento, '@nombreArchivo', '@urlArchivo', '@numeroMetrosEstimado', @tiempoImpresionEstimado, @valorImpuestos, @valorTotal, '@fechaAbono', '@fechaFin', @abonoPagado)";
       consulta = consulta.replace('@idUsuario',fields.idEmpresa);
@@ -626,7 +639,7 @@ app.post('/imprimirPieza', function(req, res) {
       consulta = consulta.replace('@fechaAbono',fields.fechaPagoAbono);
       consulta = consulta.replace('@fechaFin',fields.fechaEntrega);
       consulta = consulta.replace('@abonoPagado',0); //Aqui el abono aun no se ha pagado
-      console.log(consulta);
+      
       con.query(consulta, function (err, result1) {
       if (err) throw err;
         //Obtener el ID de la cotizacion
@@ -638,7 +651,7 @@ app.post('/imprimirPieza', function(req, res) {
           consulta = consulta.replace('@idCotizacion', idCotizacion);
           consulta = consulta.replace('@fechaInicio', fields.fechaPagoAbono);
           consulta = consulta.replace('@fechaFinal', fields.fechaEntrega);
-          console.log(consulta);
+          
           con.query(consulta, function (err, result2) {
           if (err) throw err;
           
@@ -667,7 +680,7 @@ app.get('/envioExitoso', function(req, res) {
 
 // Pagina principal de usuarios 
 app.get('/main', function(req, res) {
-  console.log(req.session.usrID);
+  
   if(req.session.usrID){
     res.render('pages/paginaPrincipal', {
       datosEmpresaClass: '',
@@ -728,7 +741,7 @@ app.get('/registrarImpresora', function(req, res) {
     if(req.session.usrID){
       var idUsuario =  req.session.usrID;
       var consulta = "SELECT * FROM `impresora` INNER JOIN usuario ON impresora.IDUsuario=usuario.idUsuario WHERE impresora.IDUsuario = "+idUsuario;
-      console.log(consulta);
+      
       con.query(consulta, function (err, rows) {
       if (err) throw err;
       var divFinal = ""; //En este div quedan las etiquetas finales
@@ -826,7 +839,7 @@ app.post('/registrarFilamento', function(req, res) {
     form.parse(req, function (err, fields, files) {
       var idPrinter = fields.idImpresora;
       consulta = "SELECT * FROM `filamento` WHERE idImpresora ="+idPrinter+" and idUsuario="+req.session.usrID;
-      console.log(consulta);
+      
       con.query(consulta, function (err, rows) {
         if (err) throw err;
         divFilaFinal = ""; //En este div quedan las etiquetas finales
@@ -840,7 +853,7 @@ app.post('/registrarFilamento', function(req, res) {
           divFilaTemp = divFilaTemp.replace('@filaTipo',row.tipoFilamento);
           divFilaFinal += divFilaTemp;
         });        
-          //console.log(divFilaFinal);
+          //
           res.render('pages/registrarFilamento',{
             datosEmpresaClass: '',
             main:'',
@@ -870,12 +883,12 @@ app.post('/agregarFilamento', function(req, res) {
     consulta = consulta.replace('@pesoFilamento',fields.gramos);
     consulta = consulta.replace('@diametroFilamento',fields.diametro);
     consulta = consulta.replace('@costoFilamento',fields.costoFila);    
-    //console.log(consulta);
+    //
     con.query(consulta, function (err, rows) {
     if (err) throw err;
 
     consulta = "SELECT * FROM `filamento` WHERE idImpresora ="+fields.idImpresora+" and idUsuario="+req.session.usrID;
-    console.log(consulta);
+    
     con.query(consulta, function (err, rows) {
       if (err) throw err;
       divFilaFinal = ""; //En este div quedan las etiquetas finales
@@ -889,7 +902,7 @@ app.post('/agregarFilamento', function(req, res) {
         divFilaTemp = divFilaTemp.replace('@filaTipo',row.tipoFilamento);
         divFilaFinal += divFilaTemp;        
       });
-      console.log(divFilaFinal);
+      
       res.render('pages/registrarFilamento',{
         datosEmpresaClass: '',
         main:'',
@@ -931,7 +944,7 @@ app.get('/about', function(req, res) {
 });
 
 app.listen(port);
-console.log(port+' is the magic port');
+
 
 
 
@@ -1109,7 +1122,7 @@ function enviarEmail(remitente,destinatario,subject,text,filename,path){
        //res.send(err);
      }
      else{
-       console.log(info);
+       
        //res.send(info);
      }
     } 
