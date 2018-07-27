@@ -1,3 +1,4 @@
+var urlEliminar = '/eliminarFilamento';
 function calcularLargo()
 {
 	var masa1 =  parseInt(document.getElementById("filaPeso").value);

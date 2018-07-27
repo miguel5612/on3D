@@ -38,6 +38,10 @@ con.connect(function(err) {
   if (err) throw err;
   
 });
+//Ruta de la aplicacion
+rutaEliminarImpresora = '/eliminarImpresora';
+
+
 
 //Configuracion del envio de email
 var user = 'onmotica@gmail.com';
@@ -621,7 +625,7 @@ app.post('/subirSTL', function(req, res) {
 // generacion de la orden de impresion
 app.post('/imprimirPieza', function(req, res) {
   var form = new formidable.IncomingForm();
-    form.parse(req, function (err, fields, files) {
+  form.parse(req, function (err, fields, files) {
       
       var url = fields.url;
       //Crear cotizacion en el sistema
@@ -733,8 +737,25 @@ app.get('/registrarFilamento', function(req, res) {
     });
 });
 
+
+app.post(rutaEliminarImpresora, function(req, res) {
+  var form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+  
+    var consulta = "DELETE FROM filamento WHERE idImpresora = "+fields.idImpresora;
+    console.log(consulta);
+    con.query(consulta, function (err, rows) {
+      if (err) throw err;
+      var consulta = "DELETE FROM impresora WHERE idImpresora = "+fields.idImpresora;
+      con.query(consulta, function (err, rows) {
+      if (err) throw err;
+        res.redirect('/registrarImpresora');    
+      });
+    });
+  });
+});
 // registrar impresora 
-var impresoraDiv = "<form onclick='enviar(this.id)' id='printer@id' method='POST' action='/registrarFilamento'><input type='Text' name='idImpresora' value='@id' style='display:none'><div class='col-md-3'><div class='well dash-box'><h2><img src='/icons/printer.ico' style='width: 80px;height: 80px;'/><div></div><span class=''></span>&nbsp&nbsp @Nombre</h2><h4>@Version</h4></div></div></form>";
+var impresoraDiv = "<div class='col-md-3'><form class='col-md-12' style='padding:0;' onclick='enviar(this.id)' id='printer@id' method='POST' action='/registrarFilamento'><input type='Text' name='idImpresora' value='@id' style='display:none'><div class='col-md-12'><div class='well dash-box col-md-12' style='border:0;padding:0;margin:0'><h2 class='col-md-12'><img class='col-md-12' style='margin-top:11%' src='/icons/printer.ico' style='width: 80px;height: 80px;'/><div></div><span class='col-md-12'>@Nombre</span></h2><h4>@Version</h4></div></div></form><form action='@url' method='POST' id='formRedirect'><input style='display:none' type='Text' value='@idImpresora' name='idImpresora'><button type='submit' style='margin-left:11%' class='btn btn-danger'> Eliminar impresora </button></form></div>";
 var divFinal = ""; //En este div quedan las etiquetas finales
 var divTemp = ""; //En este div se cargan los datos temporalmente
 app.get('/registrarImpresora', function(req, res) {
@@ -748,6 +769,8 @@ app.get('/registrarImpresora', function(req, res) {
       var divTemp = ""; //En este div se cargan los datos temporalmente
       rows.forEach(function(row) {
         divTemp = impresoraDiv;
+        divTemp = divTemp.replace('@url',rutaEliminarImpresora);
+        divTemp = divTemp.replace('@idImpresora',row.idImpresora);
         divTemp = divTemp.replace('@id',row.idImpresora);
         divTemp = divTemp.replace('@id',row.idImpresora);
         divTemp = divTemp.replace('@Nombre',row.nombreImpresora);
@@ -831,7 +854,7 @@ app.get('/configurarFilamento', function(req, res) {
     });
 });
 // Agregar filamento a impresora
-var divFilamento = "<form id='eliminarFilamento@filaID'><div class='col-md-3'><div class='well dash-box'><h2>@filanombre</h2><h2><img src='/icons/filamento.ico' style='width: 80px;height: 80px;'/><div></div><span class=' aria-hidden='true'></span>&nbsp&nbsp @filaLargo Mt </h2><h4>@filaTipo <input style='width: 90px;height: 30px;' class='jscolor' name='color' value='@filaColor'/>  </h4></div></div></form>";
+var divFilamento = "<form class='col-md-3'  onclick='enviarFormulario(this.id,urlEliminar)' id='form'><div class='well dash-box'><h2>@filanombre</h2><h2><img src='/icons/filamento.ico' style='width: 80px;height: 80px;'/><div></div><span class=' aria-hidden='true'></span>&nbsp&nbsp @filaLargo Mt </h2><h4>@filaTipo <input type='Text' value='@filaID' name='idFilamento' style='display:none'/> <input style='width: 90px;height: 30px;' class='jscolor' name='color' value='@filaColor'/>  </h4></div></form>";
 var divFilaTemp = "";
 var divFilaFinal = ""; 
 app.post('/registrarFilamento', function(req, res) {
@@ -868,6 +891,23 @@ app.post('/registrarFilamento', function(req, res) {
       });
   });
 });
+
+app.post('/eliminarFilamento', function(req, res) {
+  var form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+  var consulta = "DELETE FROM filamento WHERE idFilamento = @idFilamento";
+  console.log(fields);
+  consulta = consulta.replace('@idFilamento', fields.idFilamento);
+  console.log(consulta);
+  con.query(consulta, function (err, rows) {
+  if (err) throw err;
+    res.end();
+    //res.redirect('/main');
+  });  
+  });
+});
+    
+
 //Agregar el filamento a la impresora seleccionada
 app.post('/agregarFilamento', function(req, res) {
   if(req.session.usrID){

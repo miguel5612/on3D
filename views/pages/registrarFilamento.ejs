@@ -12,6 +12,7 @@
 	<% include ../partials/header %>
 </header>
 <script type="text/javascript" src="../js/paginaPrincipal.js"></script>
+	<script type="text/javascript" src="/js/submitFormWithoutReload.js"></script>
 <style type="text/css">
 	.clientHide{
 		display:none;
@@ -33,7 +34,7 @@
 				</div>
 					<div style="margin:2%;padding: 1%;">
 						<form method="POST" onsubmit="return validarFilamento()" action="/agregarFilamento">
-							<input type="Text" name="idImpresora" value="<%- idImpresora %>">
+							<input type="Text" style="display:none" name="idImpresora" value="<%- idImpresora %>">
 							<input type="Text" name="filaTipo" value="ABS" id="filamento" style="display:none">
 							<div><label>Nombre del filamento:&nbsp</label><input type="Text" placeholder="Ej. Filamento1" name="filaNombre"></div>
 							<div><label>Color:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label><input class="jscolor" name="color" value="ab2567"/></div>
