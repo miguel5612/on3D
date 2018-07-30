@@ -698,11 +698,14 @@ app.get('/main', function(req, res) {
     res.redirect("/index.html");
   }
 });
+
 // Trabajo pendiente
-var formBasic = "   <form action='/reporteImpresion' method='POST'><div class='panel-body'><div class='col-md-3'><div class='well dash-box'><h2 onclick='reportarIntento()'><img src='/icons/3dIcon.ico' style='width: 80px;height: 80px;'><span class=' aria-hidden='true'></span> @fechaEntrega </h2><h4><a href='@url'>@nombreArchivo</a></h4></div></div></form>";
+var formBasic = "   <form class='col-md-3' style='padding:0' action='/reporteImpresion' method='POST'><div class='panel-body'><div class='col-md-12'><div class='well dash-box'><h2 onclick='reporteImpresion(@idCotizacion)'><img src='/icons/3dIcon.ico' style='width: 80px;height: 80px;'><span class=' aria-hidden='true'> @fechaEntrega </span></h2><h4><a href='@url'>@nombreArchivo</a></h4></div></div></div></form>";
 var formTemp = "";
 var formFinal = "";
 app.get('/pendent', function(req, res) {
+    var formTemp = "";
+    var formFinal = "";
     var consulta = "SELECT * FROM `cotizacion` WHERE idUsuario = @idUsuario";
     consulta = consulta.replace('@idUsuario',req.session.usrID);
     con.query(consulta, function (err, rows) {
@@ -712,7 +715,9 @@ app.get('/pendent', function(req, res) {
         formTemp = formTemp.replace('@url',row.urlArchivo);
         formTemp = formTemp.replace('@nombreArchivo',row.nombreArchivo);
         formTemp = formTemp.replace('@fechaEntrega',dateFormat(row.fechaFin,"yyyy.mm.dd"));
+        formTemp = formTemp.replace('@idCotizacion',row.idCotizacion);
         formFinal +=formTemp;
+  
       })
       res.render('pages/trabajoPendiente', {
         datosEmpresaClass: '',

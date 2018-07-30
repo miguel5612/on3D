@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+º<!DOCTYPE html>
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="../css/bootsMain.css">
@@ -9,6 +9,8 @@
 	</head>
 	<header>
 	    <% include ../partials/header %>
+	    <script type="text/javascript" src="/js/dinamicModal.js"></script>
+	    <script type="text/javascript" src="/js/pendent.js"></script>
 	</header>
 	<script type="text/javascript" src="../js/paginaPrincipal.js"></script>
 	<style type="text/css">
@@ -19,6 +21,9 @@
 </head>
 <body>
 	<br><br><br><br>
+	<div class="container">
+		<div id="idMyModal"></div>
+	</div>
 	<section id="main">
 	  <div class="container">
 	    <div class="row">
@@ -26,7 +31,7 @@
 	        <% include ../partials/menuAdmin %>
 	      </div>
 	      <div class="col-md-9">
-	          <div class="panel panel-default">
+	          <div class="panel panel-default container" style="e">
 	  <div class="panel-heading" style="background-color:  #095f59;">
 	    <h3 class="panel-title">Panel principal</h3>
 	  </div>
